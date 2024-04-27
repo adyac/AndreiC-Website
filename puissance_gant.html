@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Andrei Corduneanu</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        /* Style for the modal background */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.9);
+            align-items: center; 
+            justify-content: center;
+        }
+    
+        /* Style for the modal content (image) */
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            margin: auto; 
+            display: block;
+            animation-name: zoom;
+            animation-duration: 0.6s;
+        }
+    
+        /* Adding animations */
+        @keyframes zoom {
+            from {transform:scale(0)} 
+            to {transform:scale(1)}
+        }
+        .text-justify {
+            text-align: justify;
+        }
+
+        /* Add some margin to the bottom of the 'About the Project' section */
+        .col-md-6:first-child {
+            margin-bottom: 30px; /* You can adjust the value as needed */
+        }
+        
+        .github-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #333; /* GitHub's Icon Color, change as needed */
+            font-size: 20px; /* Icon Size, change as needed */
+            text-decoration: none; /* Removes underline from hyperlink */
+        }
+
+        .github-link:hover,
+        .github-link:focus {
+            color: #000; /* Darker color on hover for visual feedback */
+            text-decoration: none; /* Keeps the underline off on hover */
+        }
+
+        .github-link i {
+            margin-right: 5px; /* Spacing between icon and text */
+        }
+        body {
+            padding-top: 70px; /* Height of navbar */
+        }
+
+        .header-strip {
+        margin-bottom: 6rem;
+        background: url(../img/pngtreehexbg.png)  right  no-repeat;
+        background-size: cover; /* Stretch the background image to cover the entire container */
+        height: 67vh; /* Set the height of the element to 100% of the viewport height */
+        width: 100%; /* Ensure the width is 100% of the containing element */
+        }
+
+        html, body {
+        margin: 0;
+        padding: 0;
+        }
+
+        .container-fluid {
+        margin-top: 0 !important; /* This overrides any existing top margin */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light fixed-top shadow py-lg-0 px-4 px-lg-5 wow fadeIn" data-wow-delay="0.1s">
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-between py-4 py-lg-0" id="navbarCollapse">
+            <a href="index.html" class="navbar-brand bg--primary py-3 px-4 mx-3 d-none d-lg-block">
+                <h1 class="text--secondary fw-bold m-0">Andrei Corduneanu</h1>
+            </a>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-light my-6 mt-0" id="home">
+        <div class="container">
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6 py-6 pb-0 pt-lg-0">
+                    <br><br><br>
+                    <h3 class="display-4 ">Puissance Gant (Power Glove)</h3>
+                        <div class="typed-text d-none">Winter 2023, Université de Sherbrooke</div> <h2 class="typed-text-output d-inline"></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Header End -->
+
+    <!-- Main Content Start -->
+    <section class="container my-5">
+        <!-- Images Row -->
+        <div class="container">
+            <div class="row text-center">
+            </div>
+            <div class="row text-center mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="col-12">
+                        <h2>Architecture</h2> 
+                    </div>
+                    <img src="img/puissancegant_architecture.png" class="img-fluid" onclick="openModal(this.src)">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="col-12">
+                        <h2>Preview Video</h2>
+                    </div>
+                    <img src="https://youtu.be/RtNsFn4x6qA"  class="img-fluid" onclick="openModal(this.src)">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="col-12">
+                        <h2>Electronic Design</h2>
+                    </div>
+                    <img src="img/puissancegant_electronics.png"  class="img-fluid" onclick="openModal(this.src)">
+                </div>
+            </div>
+            <br><br><br>
+            <div class="row text-center mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="col-12">
+                        <h2>Mechanics Modelling</h2> 
+                    </div>
+                    <img src="img/puissancegant_mechanics.png" class="img-fluid" onclick="openModal(this.src)">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="col-12">
+                        <h2>User Interface</h2> 
+                    </div>
+                    <img src="img/puissancegant_UI.png" class="img-fluid" onclick="openModal(this.src)">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="col-12">
+                        <h2>User's Glove</h2> 
+                    </div>
+                    <img src="img/puissancegant_glove.jpg" class="img-fluid" onclick="openModal(this.src)">
+                </div>
+            </div>
+        </div>
+        <br><br><br>
+        <!-- About and Skills Section -->
+        <div class="row">
+            <div class="col-md-6">
+                <h2>About the Project</h2>
+                <p class="text-justify">The Power Glove team aimed to develop a robotic hand and an intuitive remote control system. 
+                    When the user dons the glove and articulates their fingers, the glove’s sensors detect these movements and relay the 
+                    corresponding commands, causing the robotic hand to replicate the finger motions in real time, thus achieving a synchronized
+                     bionic extension of the human hand's capabilities.
+                    The final product is a three-fingered hand, with each finger operated by a glove fitted with sliding potentiometers.
+                     A user interface allows monitoring and manual control of the robot's status.<br> <br>
+                    
+                     Three main components communicate via a WI-FI wireless communication server. An ESP32 board reads the glove's status 
+                     and sends finger positioning data to the system. A computer receives this information and relays it to an OpenCR board, 
+                     which operates the hand's motors. A second computer displays a user interface that presents valuable information and enables 
+                     manual hand control.</p>
+            </div>
+            <div class="col-md-6" style="padding-left: 200px;">
+                <h2>Skills Used</h2><br>
+                <ul class="list-unstyled">
+                    <li>Embedded Systems Programming C++ <br>(RaspberryPi, OpenCR, Arduino)<br><br></li>
+                    <li>3D Modelling<br><br></li>
+                    <li>MQTT Serial Communication (ESP32)<br><br></li>
+                </ul>
+
+                 <!-- GitHub Link -->
+                 <br>
+                <h3>Github Link</h3>
+                <a href="https://github.com/Puissance-Gant/S4-Puissance-Gant" class="github-link" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+            </div>
+
+
+        </div>
+         
+
+        
+    </section>
+    <!-- Main Content End -->
+
+    <!-- Footer Start -->
+    <footer class="bg-dark text-white text-center p-3">
+        <p>Andrei Corduneanu | <a href="mailto:andrei.corduneanu8@gmail.com" class="text-white">andrei.corduneanu8@gmail.com</a> | <a href="https://www.usherbrooke.ca" class="text-white">UdeS</a> | <a href="https://www.linkedin.com/in/alx87grd" class="text-white">LinkedIn</a></p>
+    </footer>
+    <!-- Footer End -->
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <img class="modal-content" id="img01">
+    </div>
+
+    <!-- Bootstrap JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/typed/typed.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/isotope/isotope.pkgd.min.js"></script>
+    <script src="lib/lightbox/js/lightbox.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+
+    <script>
+        window.addEventListener('load', function() {
+            var spinner = document.getElementById('spinner');
+            spinner.classList.remove('show');
+        });
+    </script>
+
+
+    <script>
+        function openModal(src) {
+            // Get the modal and the navbar
+            console.log("Opening modal...");  // This will log to your browser's console
+            var modal = document.getElementById("myModal");
+            var navbar = document.querySelector('.navbar'); // Select the navbar
+
+            // Get the image and insert it inside the modal
+            var modalImg = document.getElementById("img01");
+            modal.style.display = "block";
+            modalImg.src = src;
+            modalImg.style.animationName = "zoom";
+            modalImg.style.animationDuration = "0.6s";
+
+            // Hide the navbar
+            navbar.style.display = 'none';
+        }
+
+        // When the user clicks anywhere outside of the image, close it and show the navbar
+        window.onclick = function(event) {
+            var modal = document.getElementById("myModal");
+            var navbar = document.querySelector('.navbar'); // Select the navbar
+            if (event.target == modal) {
+                modal.style.display = "none";
+                // Show the navbar again when the modal is closed
+                navbar.style.display = 'block';
+            }
+        }
+
+    </script>
+</body>
+</html>
