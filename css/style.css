@@ -486,6 +486,20 @@
     background: var(--primary);
 }
 
+.video-container {
+    width: 100%; /* Adjust based on your layout */
+    padding-top: 100%; /* This creates a square aspect ratio */
+    position: relative; /* Positions the inner content absolutely inside this container */
+}
+
+.video-container iframe,
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
 
 /* Update specific selectors that use the primary and secondary colors */
