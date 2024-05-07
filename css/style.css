@@ -486,14 +486,13 @@
     background: var(--primary);
 }
 
-.video-container {
-    width: 100%; /* Adjust based on your layout */
-    padding-top: 100%; /* This creates a square aspect ratio */
-    position: relative; /* Positions the inner content absolutely inside this container */
+.responsive-iframe-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 85%; /* Adjust the percentage based on the aspect ratio */
 }
 
-.video-container iframe,
-.video-container video {
+.responsive-iframe {
     position: absolute;
     top: 0;
     left: 0;
