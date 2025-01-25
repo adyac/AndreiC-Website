@@ -67,33 +67,36 @@
 
 
     <!-- Header Start -->
-    <div class="container-fluid bg-light my-6 mt-0" id="home">
+    <div class="container-fluid bg-light my-6 mt-3" id="home">
         <div class="container">
             <div class="row g-5 align-items-center">
                 <div class="col-lg-6">
                     <h3 class="text-primary mb-3">Hi! I'm</h3>
                     <h1 class="display-3 mb-3">Andrei Corduneanu</h1>
                     <h2 class="typed-text-output d-inline"></h2>
-                    <div class="typed-text d-none">Robotics Engineering Student</div>
+                    <h3 class="typed-text d-none">Robotics Engineering</h3>
+                    
                     <div class="d-flex flex-column align-items-start pt-5">
-                        <p class="mb-2">Email me:</p>
-                        <h3 class="fw-bold">andrei.corduneanu8@gmail.com</h3>
-                        <p class="mb-2">Located in:</p>
-                        <h3 class="fw-bold">Greater Montreal Area, QC, Canada</h3>
+                        <p class="mb-2" style="font-size: 20px;">Email me:</p>
+                        <h3 class="fw-bold" style="font-size: 18px;">andrei.corduneanu8@gmail.com</h3>
+                        <p class="mb-2" style="font-size: 20px;">Located in:</p>
+                        <h3 class="fw-bold" style="font-size: 20px;">Greater Montreal Area, QC, Canada</h3>
                         <div class="d-flex pt-2">
                             <a class="btn btn-square btn-primary me-2" href="https://www.linkedin.com/in/andrei-corduneanu/"><i class="fab fa-linkedin-in"></i></a>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-6 d-flex justify-content-center">
-                    <img class="img-fluid" src="img/PhotoProfilAndrei-removebg.png" alt="Profile">
+                
+                    <div class="d-flex justify-content-center mt-3">
+                        <img class="img-fluid" src="img/PhotoProfilAndrei-removebg.png" alt="Profile">
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
     <!-- Header End -->
 
-    <!-- Video Modal Start -->
+    <!-- Video Modal Start 
     <div class="modal modal-video fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-0">
@@ -102,7 +105,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- 16:9 aspect ratio -->
                     <div class="ratio ratio-16x9">
                         <iframe class="embed-responsive-item" src="" id="video" allowfullscreen allowscriptaccess="always"
                             allow="autoplay"></iframe>
@@ -110,11 +112,11 @@
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Video Modal End -->
+    </div> 
+     Video Modal End -->
 
 <!-- Expertise Start -->
-<div class="container-xxl py-6 pb-5" id="skill">
+<div class="container-xxl py-6 pb-5" id="skill" style="margin-top: 15rem;">
     <div class="container">
         <div class="row g-5">
             <div class="col-lg-12 wow fadeInUp" data-wow-delay="0.1s">
@@ -125,7 +127,7 @@
                         <button class="nav-link w-100 py-3 fs-5 active" data-bs-toggle="pill" href="#my-skills">My Skills</button>
                     </li>
                     <li class="nav-item w-50">
-                        <button class="nav-link w-100 py-3 fs-5" data-bs-toggle="pill" href="#experience-education">Experience & Education</button>
+                        <button class="nav-link w-100 py-3 fs-5" data-bs-toggle="pill" href="#experience-education">Experience</button>
                     </li>
                 </ul>
 
@@ -140,7 +142,6 @@
                                     <div class="skill mb-4">
                                         <h6 class="font-weight-bold">Python</h6>
                                         <h6 class="font-weight-bold">C/C++</h6>
-                                        <h6 class="font-weight-bold">Neural Networks</h6>
                                         <h6 class="font-weight-bold">Data Structures</h6>
                                         <h6 class="font-weight-bold">FreeRTOS</h6>
                                         <h6 class="font-weight-bold">HTML and CSS</h6>
@@ -151,7 +152,6 @@
                                     <h4 class="skills-category-title">Robotics</h4>
                                     <div class="skill mb-4">
                                         <h6 class="font-weight-bold">ROS Programming</h6>
-                                        <h6 class="font-weight-bold">Industrial Automation Design</h6>
                                         <h6 class="font-weight-bold">PLC, Ladder, SFC</h6>
                                         <h6 class="font-weight-bold">Collaborative Robots</h6>
                                         <h6 class="font-weight-bold">FANUC</h6>
@@ -367,6 +367,15 @@
             spinner.classList.remove('show');
         });
     </script>
+    <script>
+        $(window).on('load', function() {
+          let $portfolioContainer = $('.portfolio-container');
+          $portfolioContainer.isotope({
+            itemSelector: '.portfolio-item',
+            layoutMode: 'fitRows'
+          });
+        });
+      </script>
     
 </body>
 
