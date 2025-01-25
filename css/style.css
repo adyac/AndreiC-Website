@@ -113,11 +113,26 @@
     background-size: cover; /* Stretch the background image to cover the entire container */
     height: 67vh; /* Set the height of the element to 100% of the viewport height */
     width: 100%; /* Ensure the width is 100% of the containing element */
+    margin-top: 6rem; /* or padding-top: 3rem */
+
 }
+
+body {
+    padding-top: 32px; /* match your navbar’s height */
+  }
 
 .typed-cursor {
     font-size: 30px;
     color: var(--dark);
+}
+
+.typed-text-output {
+    /* Let it be block or inline-block so it can reserve space */
+    display: inline-block; 
+    min-height: 8em; /* enough for two lines at your chosen font-size */
+    line-height: 1.2;  /* adjust to your preference */
+    max-width: 100%;   /* so it still shrinks on mobile if needed */
+    /* If you never want a wrap, you could do: white-space: nowrap; */
 }
 
 .btn-play {
@@ -229,6 +244,8 @@
 #skill .progress {
     height: 5px;
     border-radius: 5px;
+    margin-top: 3rem; /* or padding-top: 3rem */
+
 }
 
 #skill .progress .progress-bar {
