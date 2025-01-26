@@ -111,14 +111,16 @@
     margin-bottom: 6rem;
     background: url(../img/pngtreehexbg.png)  right  no-repeat;
     background-size: cover; /* Stretch the background image to cover the entire container */
+    background-size: cover; /* Make the image cover the entire container */
+    background-position: center; /* Center the image */
     height: 67vh; /* Set the height of the element to 100% of the viewport height */
     width: 100%; /* Ensure the width is 100% of the containing element */
-    margin-top: 6rem; /* or padding-top: 3rem */
+    margin-top: 0; /* or padding-top: 3rem */
 
 }
 
 body {
-    padding-top: 32px; /* match your navbar’s height */
+    padding: 0; /* match your navbar’s height */
   }
 
 .typed-cursor {
