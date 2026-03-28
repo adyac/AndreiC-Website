@@ -204,6 +204,44 @@ body {
     }
 }
 
+.github-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: #333;
+    font-size: 18px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa; /* Matches your bg-light */
+}
+
+.github-link:hover {
+    color: #007bff; /* Primary brand color */
+    background-color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+}
+
+
+/* Update this in your <style> tag */
+.modal {
+    display: none; /* Must be none by default */
+    position: fixed; 
+    z-index: 9999; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.9);
+    /* Remove align-items and justify-content from here */
+}
+
+/* Add this class to handle the centering only when active */
+.modal.active {
+    display: flex !important;
+    align-items: center; 
+    justify-content: center;
+}
+
 .modal-video .modal-dialog {
     position: relative;
     max-width: 800px;

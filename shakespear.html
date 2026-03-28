@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Andrei Corduneanu</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .text-justify {
+            text-align: justify;
+        }
+
+        /* Add some margin to the bottom of the 'About the Project' section */
+        .col-md-6:first-child {
+            margin-bottom: 30px; /* You can adjust the value as needed */
+        }
+
+        .header-strip {
+        margin-bottom: 6rem;
+        background: url(../img/pngtreehexbg.png)  right  no-repeat;
+        background-size: cover; /* Stretch the background image to cover the entire container */
+        height: 67vh; /* Set the height of the element to 100% of the viewport height */
+        width: 100%; /* Ensure the width is 100% of the containing element */
+        }
+
+        html, body {
+        margin: 0;
+        padding: 0;
+        }
+
+        .container-fluid {
+        margin-top: 0 !important; /* This overrides any existing top margin */
+        }
+        /* Fullscreen Modal Background */
+        .modal {
+            display: none; /* CHANGED: This must be none so it starts hidden */
+            position: fixed; 
+            z-index: 9999; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            background-color: rgba(0,0,0,0.95); 
+            
+            /* Keep these for centering, but they only activate when display is changed to flex */
+            align-items: center; 
+            justify-content: center;
+        }
+
+        /* The Image inside the modal */
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain; /* Keeps image proportions */
+        }
+
+        /* Zoom Animation */
+        .modal-content {  
+            animation-name: zoom;
+            animation-duration: 0.4s;
+        }
+
+        @keyframes zoom {
+            from {transform:scale(0.7); opacity: 0;} 
+            to {transform:scale(1); opacity: 1;}
+        }
+
+        /* Close button style */
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+
+<div class="container-fluid bg-light my-6 mt-0" id="home">
+        <div class="container">
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-6 py-6 pb-0 pt-lg-0">
+                    <br><br><br>
+                    <h3 class="display-4 ">Transformer Project: Text Generation</h3>
+                    <div class="typed-text d-none">GEI898 - Apprentissage profond avancé | Feb 12, 2026</div> 
+                    <h2 class="typed-text-output d-inline"></h2>
+                    <p class="mt-3"><strong>Authors:</strong> Behrouz Nik-Nejad-Kazem-Pour, Andrei Corduneanu, Kevin Darren Nguemdjom Tchangang</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="container my-5 pb-5 border-bottom">
+            <div class="row mb-5">
+                <div class="col-12 text-center"> <h2 class="mb-4">Project Overview</h2>
+                    <p class="text-justify lead">
+                        This project focuses on the development of a <strong>GPT-style Transformer</strong> trained specifically on the <em>tiny_shakespeare</em> dataset. 
+                        The goal was to build a generative model from scratch that could predict subsequent tokens in a sequence, effectively mimicking the 
+                        unique syntax and prose of William Shakespeare.
+                    </p>
+                    <p class="text-justify">
+                        By experimenting with various configurations—ranging from embedding dimensions to the number of attention heads—we documented the 
+                        evolution of the model's performance. The final iteration represents a deep learning architecture capable of producing 
+                        structurally sound and stylistically consistent text, showcasing the power of self-attention mechanisms in natural language processing.
+                    </p>
+
+                    <div class="py-2"></div>
+                    
+                    <div class="mt-4">
+                        <a href="https://github.com/YourUsername/YourRepoName" class="github-link px-4 py-2 border rounded shadow-sm" target="_blank">
+                            <i class="fab fa-github"></i> View Full Source Code & Notebook
+                        </a>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <div class="py-2"></div>
+
+    <section class="container my-5 pb-5">
+        
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h2>1. Text to Token Conversion</h2>
+                
+                <p class="text-justify">
+                    Before training, raw data undergoes preprocessing. We utilized a <strong>90/5/5 split</strong> (Training, Validation, Test). Unlike the standard 70/15/15 split, this maximizes training volume for the <code>tiny_shakespeare</code> dataset, allowing the model to better capture linguistic subtleties.
+                </p>
+                <ul>
+                    <li><strong>1. Preparing the Text (String and Words)</strong> 
+                        The process begins by loading the entire Shakespeare dataset as one continuous string. To clean the data, the text is converted to lowercase, and punctuation is isolated so that marks like periods or commas are treated as separate tokens. This ensures that "king" and "king," are seen as the same fundamental word. The big string is then split into a list of individual words and punctuation marks.</li>
+                    <li><strong>Sequencing:</strong> Fixed length ($N=64$) with overlap to increase example density.</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <img src="img/Shakespear/Word2Seq.png" class="img-fluid rounded shadow" onclick="openModal(this.src)">
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-6 order-md-2">
+                <h2>2. Embedding Generation</h2>
+                <p class="text-justify">
+                    The model converts integer indices into vectors rich in semantic information:
+                </p>
+                <ul>
+                    <li><strong>Token Embedding:</strong> Vocabulary projected into $D=512$ space.</li>
+                    <li><strong>Position Embedding:</strong> Learnable positional vectors are added to indicate word order, as Transformers lack inherent recurrence.</li>
+                    <li><strong>Result:</strong> Input = <code>Vector(Word) + Vector(Position)</code>.</li>
+                </ul>
+            </div>
+            <div class="col-md-6 order-md-1">
+                <img src="img/Shakespear/Embedding.png" class="img-fluid rounded shadow" onclick="openModal(this.src)">
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h2>3. Architecture & Attention</h2>
+                <p class="text-justify">
+                    Based on "Attention Is All You Need," we built a <strong>Decoder-Only</strong> Transformer. 
+                    The core is the Causal Multi-Head Attention (8 heads), which splits the 512-dimension space into 8 subspaces of 64. 
+                    This allows the model to focus on various linguistic aspects like grammar and rhyme simultaneously.
+                </p>
+                <div class="bg-light p-3 border-start border-primary border-4">
+                    <strong>Causal Mask:</strong> A lower triangular matrix ($-\infty$) prevents the model from "seeing the future" during training.
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="img/Shakespear/TransformerMultihead.png" class="img-fluid rounded shadow" onclick="openModal(this.src)">
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2>4. Model Evolution & Text Generation Results</h2>
+                <p>We tested various configurations to observe the impact of hyperparameters.</p>
+            </div>
+            
+            <div class="col-12 mb-5">
+                <div class="card shadow-sm">
+                    <img src="img/Shakespear/Gen_sansLimite.png" class="card-img-top" style="max-height: 500px; object-fit: contain; background: #000;" onclick="openModal(this.src)">
+                    <div class="card-body">
+                        <h6>1. Unconstrained Generation</h6>
+                        <p class="mb-0">No structural stopping mechanism; resulted in run-on sentences.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mb-5">
+                <div class="card shadow-sm">
+                    <img src="img/Shakespear/Gen_LimitePhrase.png" class="card-img-top" style="max-height: 500px; object-fit: contain; background: #000;" onclick="openModal(this.src)">
+                    <div class="card-body">
+                        <h6>2. Structured Generation</h6>
+                        <p class="mb-0">Included punctuation in vocabulary; stops at predicted period (.).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mb-5">
+                <div class="card shadow-sm">
+                    <img src="img/Shakespear/Gen_4Head_512.png" class="card-img-top" style="max-height: 500px; object-fit: contain; background: #000;" onclick="openModal(this.src)">
+                    <div class="card-body">
+                        <h6>3. Standard Architecture</h6>
+                        <p class="mb-0">4 heads, 512 dimensions. Balanced syntax and computation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mb-5">
+                <div class="card shadow-sm">
+                    <img src="img/Shakespear/Gen_32Head_800.png" class="card-img-top" style="max-height: 500px; object-fit: contain; background: #000;" onclick="openModal(this.src)">
+                    <div class="card-body">
+                        <h6>4. High Capacity (32 Heads / 800 Dims)</h6>
+                        <p class="mb-0">Increased vector size (from 512 to 800) allows the model to retain more "particularities" and semantic nuances for each token.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 mb-5">
+                <div class="card shadow-sm">
+                    <img src="img/Shakespear/Gen_32Head_800_5Trans.png" class="card-img-top" style="max-height: 500px; object-fit: contain; background: #000;" onclick="openModal(this.src)">
+                    <div class="card-body">
+                        <h6>5. Deep Model (5 Transformer Layers)</h6>
+                        <p class="mb-0">Our most powerful model. Stacked blocks allow for higher levels of abstraction, improving overall coherence.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </section>
+
+    <div id="myModal" class="modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="img01">
+    </div>
+
+    <script>
+        function openModal(src) {
+            var modal = document.getElementById("myModal");
+            var navbar = document.querySelector('.navbar');
+            var modalImg = document.getElementById("img01");
+
+            modal.style.display = "flex";
+            modalImg.src = src;
+
+            if (navbar) navbar.style.display = 'none';
+            document.body.style.overflow = "hidden";
+            }
+
+        function closeModal() {
+            var modal = document.getElementById("myModal");
+            var navbar = document.querySelector('.navbar');
+            
+            modal.style.display = "none";
+            if (navbar) navbar.style.display = 'block';
+            
+            // Re-enable scrolling
+            document.body.style.overflow = "auto";
+        }
+
+        // Close when clicking the background
+        window.onclick = function(event) {
+            var modal = document.getElementById("myModal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Close when pressing the 'Esc' key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+        };
+
+
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</body>
+</html>
