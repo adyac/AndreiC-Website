@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Détection d'Anomalies — Réseau Encodeur-Décodeur (Shuttle)</title>
+    <title>Anomaly Detection — Encoder-Decoder Network (Shuttle)</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -251,8 +251,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8">
-                <h1>Détection d'Anomalies par Auto-encodeur</h1>
-                <p><strong>Réseau Encodeur-Décodeur sur le dataset Shuttle</strong></p>
+                <h1>Anomaly Detection with an Autoencoder</h1>
+                <p><strong>Encoder-Decoder Network on the Shuttle Dataset</strong></p>
                 <p style="margin-top: 0.5rem; opacity: 0.9;">Université de Sherbrooke</p>
             </div>
         </div>
@@ -264,31 +264,31 @@
 
     <!-- SECTION 1: HYPERPARAMETERS -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">1. Choix des Hyperparamètres</h2>
+        <h2 class="section-title">1. Hyperparameter Selection</h2>
 
         <div class="row mb-4">
             <div class="col-lg-7">
                 <p class="text-justify lead">
-                    Ce projet implémente un réseau de neurones de type <strong>auto-encodeur</strong> dédié à la détection d'anomalies sur le dataset <em>Shuttle</em>. Le modèle apprend à reconstruire exclusivement les données normales afin d'identifier les déviations lors de la phase de test.
+                    This project implements an <strong>autoencoder</strong> neural network dedicated to anomaly detection on the <em>Shuttle</em> dataset. The model learns to reconstruct only normal data in order to identify deviations during the test phase.
                 </p>
 
                 <p class="text-justify">
-                    La sélection des paramètres repose sur une analyse statistique des données pour garantir une compression optimale.
+                    Parameter selection is based on a statistical analysis of the data to ensure optimal compression.
                 </p>
 
                 <div class="model-overview">
-                    <h5>Paramètres Retenus</h5>
+                    <h5>Selected Parameters</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Espace Latent (k = 6) :</strong> Basé sur l'analyse des valeurs propres — on observe 6 valeurs significatives</li>
-                        <li><strong>Taux d'apprentissage :</strong> <strong>0,0015</strong> — assure une stabilisation fluide de la perte</li>
-                        <li><strong>Optimiseur :</strong> <strong>Adam</strong> — convergence efficace</li>
-                        <li><strong>Epochs :</strong> <strong>80</strong> — le plateau de convergence est atteint vers la 76ème époque</li>
+                        <li><strong>Latent Space (k = 6):</strong> Based on eigenvalue analysis — 6 significant values are observed</li>
+                        <li><strong>Learning Rate:</strong> <strong>0.0015</strong> — ensures smooth loss stabilization</li>
+                        <li><strong>Optimizer:</strong> <strong>Adam</strong> — efficient convergence</li>
+                        <li><strong>Epochs:</strong> <strong>80</strong> — convergence plateau reached around epoch 76</li>
                     </ul>
                 </div>
 
-                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Analyse des Valeurs Propres</h4>
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Eigenvalue Analysis</h4>
                 <p class="text-justify">
-                    Le choix de k=6 pour l'espace latent est justifié par l'analyse spectrale suivante, où 6 valeurs propres se distinguent clairement :
+                    The choice of k=6 for the latent space is justified by the following spectral analysis, where 6 eigenvalues clearly stand out:
                 </p>
                 <div class="eigenvalue-list">
                     λ₁ = 7.9204 × 10⁻⁴ &nbsp;|&nbsp; λ₂ = 1.2390 × 10⁻⁴ &nbsp;|&nbsp; λ₃ = 2.3841 × 10⁻³<br>
@@ -299,7 +299,7 @@
 
             <div class="col-lg-5">
                 <div class="model-overview">
-                    <h4>Pile Technologique</h4>
+                    <h4>Technology Stack</h4>
                     <div style="margin-top: 1rem;">
                         <div class="badge-tech">Python 3.x</div>
                         <div class="badge-tech">PyTorch</div>
@@ -310,8 +310,8 @@
                 </div>
 
                 <div class="row-image" style="text-align: center; margin-top: 1.5rem;">
-                    <img src="img/Shuttle_Encoder_Decoder/Epoch_vs_MSE_loss.png" alt="Courbe de perte MSE" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 1 : Évolution de la perte MSE (K=6) montrant la stabilisation du modèle.</small></p>
+                    <img src="img/Shuttle_Encoder_Decoder/Epoch_vs_MSE_loss.png" alt="MSE Loss Curve" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 1: MSE loss evolution (K=6) showing model stabilization.</small></p>
                 </div>
             </div>
         </div>
@@ -319,43 +319,43 @@
 
     <!-- SECTION 2: ARCHITECTURE -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">2. Architecture du Réseau</h2>
+        <h2 class="section-title">2. Network Architecture</h2>
 
         <div class="row mb-4">
             <div class="col-lg-7">
                 <p class="text-justify">
-                    Le réseau adopte une structure symétrique en <strong>"sablier"</strong> pour extraire les caractéristiques essentielles des signaux.
+                    The network adopts a symmetric <strong>"hourglass"</strong> structure to extract the essential features from the signals.
                 </p>
 
                 <div class="model-overview">
-                    <h5>Spécifications de l'Architecture</h5>
+                    <h5>Architecture Specifications</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Dimensions des entrées/sorties :</strong> 1×9 → 1×9</li>
-                        <li><strong>Encodeur :</strong> Trois couches linéaires progressives (9 → 8 → 7 → 6)</li>
-                        <li><strong>Activations :</strong> ReLU après chaque couche linéaire</li>
-                        <li><strong>Espace Latent :</strong> Dimension compressée de <strong>6</strong></li>
-                        <li><strong>Décodeur :</strong> Structure miroir de l'encodeur (6 → 7 → 8 → 9)</li>
-                        <li><strong>Sortie finale :</strong> Aucune activation — reconstruction fidèle des valeurs réelles</li>
+                        <li><strong>Input/Output dimensions:</strong> 1×9 → 1×9</li>
+                        <li><strong>Encoder:</strong> Three progressive linear layers (9 → 8 → 7 → 6)</li>
+                        <li><strong>Activations:</strong> ReLU after each linear layer</li>
+                        <li><strong>Latent Space:</strong> Compressed dimension of <strong>6</strong></li>
+                        <li><strong>Decoder:</strong> Mirror structure of the encoder (6 → 7 → 8 → 9)</li>
+                        <li><strong>Final output:</strong> No activation — faithful reconstruction of real values</li>
                     </ul>
                 </div>
 
                 <p class="text-justify" style="margin-top: 1rem;">
-                    L'utilisation de couches <strong>ReLU</strong> après chaque couche linéaire introduit la non-linéarité nécessaire pour capturer les relations complexes dans les données. L'absence d'activation en sortie permet une reconstruction non contrainte des valeurs continues.
+                    <strong>ReLU</strong> layers after each linear layer introduce the non-linearity needed to capture complex relationships in the data. The absence of output activation allows unconstrained reconstruction of continuous values.
                 </p>
 
                 <div class="metrics-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 1.5rem;">
                     <div class="metric-card">
-                        <div class="metric-label">Entrée</div>
+                        <div class="metric-label">Input</div>
                         <div class="metric-value">9</div>
                         <div class="metric-unit">dimensions</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">Espace Latent</div>
+                        <div class="metric-label">Latent Space</div>
                         <div class="metric-value">6</div>
                         <div class="metric-unit">dimensions</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">Sortie</div>
+                        <div class="metric-label">Output</div>
                         <div class="metric-value">9</div>
                         <div class="metric-unit">dimensions</div>
                     </div>
@@ -364,8 +364,8 @@
 
             <div class="col-lg-5">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/Shuttle_Encoder_Decoder/architecture.png" alt="Architecture Encodeur-Décodeur" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 2 : Schéma de l'architecture du réseau Encodeur-Décodeur.</small></p>
+                    <img src="img/Shuttle_Encoder_Decoder/architecture.png" alt="Encoder-Decoder Architecture" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 2: Encoder-Decoder network architecture diagram.</small></p>
                 </div>
             </div>
         </div>
@@ -373,12 +373,12 @@
 
     <!-- SECTION 3: TRAINING STRATEGY -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">3. Stratégie d'Entraînement</h2>
+        <h2 class="section-title">3. Training Strategy</h2>
 
         <div class="row mb-4">
             <div class="col-lg-12">
                 <p class="text-justify lead">
-                    L'entraînement est optimisé pour traiter les données normales tout en ignorant les anomalies.
+                    Training is optimized to process normal data only, effectively ignoring anomalies.
                 </p>
             </div>
         </div>
@@ -386,22 +386,22 @@
         <div class="row">
             <div class="col-lg-6">
                 <div class="model-overview">
-                    <h5>Paramètres d'Entraînement</h5>
+                    <h5>Training Parameters</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Batch Size :</strong> <strong>256</strong> — maximise la vitesse de calcul tout en évitant une généralisation excessive</li>
-                        <li><strong>Entraînement :</strong> Exclusivement sur les données de classe normale (classe 1)</li>
-                        <li><strong>Fonction de perte :</strong> Mean Squared Error (MSE)</li>
+                        <li><strong>Batch Size:</strong> <strong>256</strong> — maximizes computation speed while avoiding excessive generalization</li>
+                        <li><strong>Training:</strong> Exclusively on normal class data (class 1)</li>
+                        <li><strong>Loss Function:</strong> Mean Squared Error (MSE)</li>
                     </ul>
                 </div>
             </div>
 
             <div class="col-lg-6">
                 <div class="model-overview">
-                    <h5>Prétraitement & Normalisation</h5>
+                    <h5>Preprocessing & Normalization</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Prétraitement :</strong> Élimination des données invalides et séparation des étiquettes pour ne garder que les 9 dimensions des capteurs</li>
-                        <li><strong>Normalisation :</strong> Calculée uniquement sur les données d'entraînement valides (classe 1)</li>
-                        <li><strong>Test :</strong> Normalisé avec les moyennes et déviations standard du set d'entraînement pour éviter que les anomalies ne biaisent l'échelle</li>
+                        <li><strong>Preprocessing:</strong> Removal of invalid data and label separation to keep only the 9 sensor dimensions</li>
+                        <li><strong>Normalization:</strong> Computed only on valid training data (class 1)</li>
+                        <li><strong>Test set:</strong> Normalized using the training set's mean and standard deviation to prevent anomalies from biasing the scale</li>
                     </ul>
                 </div>
             </div>
@@ -410,55 +410,55 @@
 
     <!-- SECTION 4: THRESHOLD DETERMINATION -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">4. Détermination du Seuil Optimal</h2>
+        <h2 class="section-title">4. Optimal Threshold Determination</h2>
 
         <p class="text-justify lead">
-            La classification finale repose sur le calcul de l'<strong>erreur de reconstruction (MSE)</strong>. Un seuil est déterminé pour séparer le "sain" de l'"anormal".
+            Final classification relies on computing the <strong>reconstruction error (MSE)</strong>. A threshold is determined to separate "normal" from "anomalous".
         </p>
 
         <div class="row mb-4">
             <div class="col-lg-6">
                 <div class="model-overview">
-                    <h5>Méthode de Détermination</h5>
+                    <h5>Determination Method</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Objectif :</strong> Recherche du compromis idéal minimisant les Faux Négatifs (FN) et les Faux Positifs (FP)</li>
-                        <li><strong>Analyse visuelle :</strong> Utilisation d'histogrammes de pertes pour identifier la séparation entre les deux distributions</li>
-                        <li><strong>Évaluation :</strong> Validation par la courbe de la F-measure (F1-score) en fonction du seuil</li>
+                        <li><strong>Objective:</strong> Find the ideal trade-off minimizing False Negatives (FN) and False Positives (FP)</li>
+                        <li><strong>Visual analysis:</strong> Loss histograms to identify the separation between the two distributions</li>
+                        <li><strong>Evaluation:</strong> Validated by the F-measure (F1-score) curve as a function of the threshold</li>
                     </ul>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/Shuttle_Encoder_Decoder/FmesureFormula.png" alt="Formule F-Measure" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Formule de la F-Measure utilisée pour l'évaluation.</small></p>
+                    <img src="img/Shuttle_Encoder_Decoder/FmesureFormula.png" alt="F-Measure Formula" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>F-Measure formula used for evaluation.</small></p>
                 </div>
             </div>
         </div>
 
-        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Histogrammes des Pertes de Reconstruction</h3>
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Reconstruction Loss Histograms</h3>
 
         <div class="row">
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/Shuttle_Encoder_Decoder/histogramme_pertes.png" alt="Histogramme des pertes" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Distribution complète des erreurs de reconstruction — données normales vs anomalies.</small></p>
+                    <img src="img/Shuttle_Encoder_Decoder/histogramme_pertes.png" alt="Loss Histogram" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Full distribution of reconstruction errors — normal data vs anomalies.</small></p>
                 </div>
             </div>
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/Shuttle_Encoder_Decoder/histogramme_pertes2.png" alt="Histogramme des pertes (zoom)" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 4 : Vue zoomée — séparation entre les distributions normales et anormales.</small></p>
+                    <img src="img/Shuttle_Encoder_Decoder/histogramme_pertes2.png" alt="Loss Histogram (zoomed)" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 4: Zoomed view — separation between normal and anomalous distributions.</small></p>
                 </div>
             </div>
         </div>
 
-        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Courbe F-Measure & Accuracy</h3>
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">F-Measure & Accuracy Curve</h3>
 
         <div class="row">
             <div class="col-lg-12">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/Shuttle_Encoder_Decoder/FMesure.png" alt="Courbe F-Measure" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 5 : Évolution de la F-measure et de l'Accuracy selon le seuil sélectionné.</small></p>
+                    <img src="img/Shuttle_Encoder_Decoder/FMesure.png" alt="F-Measure Curve" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 5: F-measure and Accuracy evolution as a function of the selected threshold.</small></p>
                 </div>
             </div>
         </div>
@@ -466,10 +466,10 @@
 
     <!-- SECTION 5: RESULTS -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">5. Résultats Obtenus</h2>
+        <h2 class="section-title">5. Results</h2>
 
         <p class="text-justify lead">
-            Les performances finales démontrent la haute précision du modèle pour ce jeu de données.
+            Final performance demonstrates the model's high precision on this dataset.
         </p>
 
         <div class="metrics-grid">
@@ -481,20 +481,20 @@
             <div class="metric-card">
                 <div class="metric-label">Accuracy</div>
                 <div class="metric-value">98.62%</div>
-                <div class="metric-unit">sur le test set</div>
+                <div class="metric-unit">on test set</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Test Loss (MSE)</div>
                 <div class="metric-value">2.5372</div>
-                <div class="metric-unit">finale</div>
+                <div class="metric-unit">final</div>
             </div>
         </div>
 
         <div class="row mt-4">
             <div class="col-lg-12">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/Shuttle_Encoder_Decoder/Resultats.png" alt="Résultats du modèle" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Résultats finaux de détection d'anomalies sur le dataset Shuttle.</small></p>
+                    <img src="img/Shuttle_Encoder_Decoder/Resultats.png" alt="Model Results" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Final anomaly detection results on the Shuttle dataset.</small></p>
                 </div>
             </div>
         </div>
@@ -505,41 +505,41 @@
         <h2 class="section-title">6. Conclusion</h2>
 
         <div class="conclusion-box">
-            <h3>Résumé du Projet</h3>
+            <h3>Project Summary</h3>
 
             <p class="text-justify">
-                Ce projet démontre qu'un <strong>auto-encodeur léger</strong> avec un espace latent de dimension 6 suffit pour détecter efficacement les anomalies dans le dataset Shuttle. L'approche de reconstruction — entraîner le modèle uniquement sur des données normales puis seuiller l'erreur MSE — s'avère robuste et interprétable.
+                This project demonstrates that a <strong>lightweight autoencoder</strong> with a latent space of dimension 6 is sufficient to effectively detect anomalies in the Shuttle dataset. The reconstruction approach — training only on normal data then thresholding the MSE error — proves to be robust and interpretable.
             </p>
 
-            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Points Clés</h4>
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Highlights</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li>F-score de <strong>0,9912</strong> — performance quasi-parfaite sur ce jeu de données</li>
-                <li>Accuracy de <strong>98,62%</strong> — généralisation excellente</li>
-                <li>Architecture symétrique minimaliste — 9 → 6 → 9 avec ReLU</li>
-                <li>Convergence stable atteinte dès la 76ème époque sur 80</li>
-                <li>Seuil optimal déterminé par analyse F-measure, minimisant FP et FN</li>
+                <li>F-score of <strong>0.9912</strong> — near-perfect performance on this dataset</li>
+                <li>Accuracy of <strong>98.62%</strong> — excellent generalization</li>
+                <li>Minimalist symmetric architecture — 9 → 6 → 9 with ReLU</li>
+                <li>Stable convergence reached by epoch 76 out of 80</li>
+                <li>Optimal threshold determined by F-measure analysis, minimizing FP and FN</li>
             </ul>
 
-            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Améliorations Futures</h4>
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li><strong>Variational Autoencoder (VAE) :</strong> Modélisation probabiliste de l'espace latent pour une meilleure généralisation</li>
-                <li><strong>Recherche de seuil automatique :</strong> Optimisation du seuil par validation croisée</li>
-                <li><strong>Autres datasets :</strong> Tester la robustesse sur KDD Cup, MNIST-Anomaly, etc.</li>
-                <li><strong>LSTM Autoencoder :</strong> Exploiter la dimension temporelle des données de capteurs</li>
+                <li><strong>Variational Autoencoder (VAE):</strong> Probabilistic latent space modeling for better generalization</li>
+                <li><strong>Automatic threshold search:</strong> Threshold optimization via cross-validation</li>
+                <li><strong>Other datasets:</strong> Test robustness on KDD Cup, MNIST-Anomaly, etc.</li>
+                <li><strong>LSTM Autoencoder:</strong> Leverage the temporal dimension of sensor data</li>
             </ul>
         </div>
 
-        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Ressources & Liens</h3>
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Resources & Links</h3>
 
         <a href="https://github.com/adyac/Gei898---Advanced-Deep-Learning/tree/main/Devoir%201%20-%20Encoder%20Decoder" class="github-link" target="_blank">
-            <i class="fab fa-github"></i> Voir le Code Source sur GitHub
+            <i class="fab fa-github"></i> View Source Code on GitHub
         </a>
 
         <div style="margin-top: 2rem; padding: 1.5rem; background: var(--light); border-radius: 8px;">
-            <h5 style="color: var(--dark); margin-bottom: 1rem;">Documents Associés</h5>
+            <h5 style="color: var(--dark); margin-bottom: 1rem;">Associated Documents</h5>
             <ul style="margin: 0; padding-left: 1.5rem;">
-                <li><strong>Dataset :</strong> UCI Shuttle Dataset — 9 features de capteurs, classes normale/anomalie</li>
-                <li><strong>Code Source :</strong> Modèle, entraînement et scripts d'évaluation sur GitHub</li>
+                <li><strong>Dataset:</strong> UCI Shuttle Dataset — 9 sensor features, normal/anomaly classes</li>
+                <li><strong>Source Code:</strong> Model, training and evaluation scripts on GitHub</li>
             </ul>
         </div>
     </section>
