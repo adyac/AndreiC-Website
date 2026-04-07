@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Détection d'Anomalies — Réseau Encodeur-Décodeur (Shuttle)</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .text-justify {
+            text-align: justify;
+        }
+
+        .header-strip {
+            margin-bottom: 6rem;
+            background: url(img/pngtreehexbg.png) right no-repeat;
+            background-size: cover;
+            height: 67vh;
+            width: 100%;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            color: black;
+        }
+
+        .header-strip h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .header-strip p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(79, 125, 250, 0.2);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-unit {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .model-overview {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .model-overview h4, .model-overview h5 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #333;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .badge-tech {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .github-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #333;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .github-link:hover {
+            color: white;
+            background-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 125, 250, 0.3);
+        }
+
+        .row-image {
+            margin: 1.5rem 0;
+        }
+
+        .row-image img {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .row-image img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(79, 125, 250, 0.2);
+        }
+
+        .conclusion-box {
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .conclusion-box h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .eigenvalue-list {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.88rem;
+            color: #333;
+            margin: 1rem 0;
+        }
+
+        .figure-caption {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Project Header -->
+<div class="header-strip">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Détection d'Anomalies par Auto-encodeur</h1>
+                <p><strong>Réseau Encodeur-Décodeur sur le dataset Shuttle</strong></p>
+                <p style="margin-top: 0.5rem; opacity: 0.9;">Université de Sherbrooke</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container my-5">
+
+    <!-- SECTION 1: HYPERPARAMETERS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">1. Choix des Hyperparamètres</h2>
+
+        <div class="row mb-4">
+            <div class="col-lg-7">
+                <p class="text-justify lead">
+                    Ce projet implémente un réseau de neurones de type <strong>auto-encodeur</strong> dédié à la détection d'anomalies sur le dataset <em>Shuttle</em>. Le modèle apprend à reconstruire exclusivement les données normales afin d'identifier les déviations lors de la phase de test.
+                </p>
+
+                <p class="text-justify">
+                    La sélection des paramètres repose sur une analyse statistique des données pour garantir une compression optimale.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Paramètres Retenus</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Espace Latent (k = 6) :</strong> Basé sur l'analyse des valeurs propres — on observe 6 valeurs significatives</li>
+                        <li><strong>Taux d'apprentissage :</strong> <strong>0,0015</strong> — assure une stabilisation fluide de la perte</li>
+                        <li><strong>Optimiseur :</strong> <strong>Adam</strong> — convergence efficace</li>
+                        <li><strong>Epochs :</strong> <strong>80</strong> — le plateau de convergence est atteint vers la 76ème époque</li>
+                    </ul>
+                </div>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Analyse des Valeurs Propres</h4>
+                <p class="text-justify">
+                    Le choix de k=6 pour l'espace latent est justifié par l'analyse spectrale suivante, où 6 valeurs propres se distinguent clairement :
+                </p>
+                <div class="eigenvalue-list">
+                    λ₁ = 7.9204 × 10⁻⁴ &nbsp;|&nbsp; λ₂ = 1.2390 × 10⁻⁴ &nbsp;|&nbsp; λ₃ = 2.3841 × 10⁻³<br>
+                    λ₄ = 6.2564 × 10⁻¹ &nbsp;|&nbsp; λ₅ = 9.8503 × 10⁻¹ &nbsp;|&nbsp; <strong>λ₆ = 1.0004</strong><br>
+                    λ₇ = 1.0245 &nbsp;|&nbsp; λ₈ = 1.7436 &nbsp;|&nbsp; λ₉ = 3.6172
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="model-overview">
+                    <h4>Pile Technologique</h4>
+                    <div style="margin-top: 1rem;">
+                        <div class="badge-tech">Python 3.x</div>
+                        <div class="badge-tech">PyTorch</div>
+                        <div class="badge-tech">NumPy</div>
+                        <div class="badge-tech">Matplotlib</div>
+                        <div class="badge-tech">Scikit-learn</div>
+                    </div>
+                </div>
+
+                <div class="row-image" style="text-align: center; margin-top: 1.5rem;">
+                    <img src="img/Shuttle_Encoder_Decoder/Epoch_vs_MSE_loss.png" alt="Courbe de perte MSE" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 1 : Évolution de la perte MSE (K=6) montrant la stabilisation du modèle.</small></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: ARCHITECTURE -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">2. Architecture du Réseau</h2>
+
+        <div class="row mb-4">
+            <div class="col-lg-7">
+                <p class="text-justify">
+                    Le réseau adopte une structure symétrique en <strong>"sablier"</strong> pour extraire les caractéristiques essentielles des signaux.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Spécifications de l'Architecture</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Dimensions des entrées/sorties :</strong> 1×9 → 1×9</li>
+                        <li><strong>Encodeur :</strong> Trois couches linéaires progressives (9 → 8 → 7 → 6)</li>
+                        <li><strong>Activations :</strong> ReLU après chaque couche linéaire</li>
+                        <li><strong>Espace Latent :</strong> Dimension compressée de <strong>6</strong></li>
+                        <li><strong>Décodeur :</strong> Structure miroir de l'encodeur (6 → 7 → 8 → 9)</li>
+                        <li><strong>Sortie finale :</strong> Aucune activation — reconstruction fidèle des valeurs réelles</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    L'utilisation de couches <strong>ReLU</strong> après chaque couche linéaire introduit la non-linéarité nécessaire pour capturer les relations complexes dans les données. L'absence d'activation en sortie permet une reconstruction non contrainte des valeurs continues.
+                </p>
+
+                <div class="metrics-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 1.5rem;">
+                    <div class="metric-card">
+                        <div class="metric-label">Entrée</div>
+                        <div class="metric-value">9</div>
+                        <div class="metric-unit">dimensions</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Espace Latent</div>
+                        <div class="metric-value">6</div>
+                        <div class="metric-unit">dimensions</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Sortie</div>
+                        <div class="metric-value">9</div>
+                        <div class="metric-unit">dimensions</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/Shuttle_Encoder_Decoder/architecture.png" alt="Architecture Encodeur-Décodeur" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 2 : Schéma de l'architecture du réseau Encodeur-Décodeur.</small></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: TRAINING STRATEGY -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">3. Stratégie d'Entraînement</h2>
+
+        <div class="row mb-4">
+            <div class="col-lg-12">
+                <p class="text-justify lead">
+                    L'entraînement est optimisé pour traiter les données normales tout en ignorant les anomalies.
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="model-overview">
+                    <h5>Paramètres d'Entraînement</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Batch Size :</strong> <strong>256</strong> — maximise la vitesse de calcul tout en évitant une généralisation excessive</li>
+                        <li><strong>Entraînement :</strong> Exclusivement sur les données de classe normale (classe 1)</li>
+                        <li><strong>Fonction de perte :</strong> Mean Squared Error (MSE)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="model-overview">
+                    <h5>Prétraitement & Normalisation</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Prétraitement :</strong> Élimination des données invalides et séparation des étiquettes pour ne garder que les 9 dimensions des capteurs</li>
+                        <li><strong>Normalisation :</strong> Calculée uniquement sur les données d'entraînement valides (classe 1)</li>
+                        <li><strong>Test :</strong> Normalisé avec les moyennes et déviations standard du set d'entraînement pour éviter que les anomalies ne biaisent l'échelle</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: THRESHOLD DETERMINATION -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">4. Détermination du Seuil Optimal</h2>
+
+        <p class="text-justify lead">
+            La classification finale repose sur le calcul de l'<strong>erreur de reconstruction (MSE)</strong>. Un seuil est déterminé pour séparer le "sain" de l'"anormal".
+        </p>
+
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="model-overview">
+                    <h5>Méthode de Détermination</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Objectif :</strong> Recherche du compromis idéal minimisant les Faux Négatifs (FN) et les Faux Positifs (FP)</li>
+                        <li><strong>Analyse visuelle :</strong> Utilisation d'histogrammes de pertes pour identifier la séparation entre les deux distributions</li>
+                        <li><strong>Évaluation :</strong> Validation par la courbe de la F-measure (F1-score) en fonction du seuil</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/Shuttle_Encoder_Decoder/FmesureFormula.png" alt="Formule F-Measure" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Formule de la F-Measure utilisée pour l'évaluation.</small></p>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Histogrammes des Pertes de Reconstruction</h3>
+
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/Shuttle_Encoder_Decoder/histogramme_pertes.png" alt="Histogramme des pertes" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Distribution complète des erreurs de reconstruction — données normales vs anomalies.</small></p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/Shuttle_Encoder_Decoder/histogramme_pertes2.png" alt="Histogramme des pertes (zoom)" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 4 : Vue zoomée — séparation entre les distributions normales et anormales.</small></p>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Courbe F-Measure & Accuracy</h3>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/Shuttle_Encoder_Decoder/FMesure.png" alt="Courbe F-Measure" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 5 : Évolution de la F-measure et de l'Accuracy selon le seuil sélectionné.</small></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: RESULTS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">5. Résultats Obtenus</h2>
+
+        <p class="text-justify lead">
+            Les performances finales démontrent la haute précision du modèle pour ce jeu de données.
+        </p>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">F-Score</div>
+                <div class="metric-value">0.9912</div>
+                <div class="metric-unit">F1-Score</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Accuracy</div>
+                <div class="metric-value">98.62%</div>
+                <div class="metric-unit">sur le test set</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Test Loss (MSE)</div>
+                <div class="metric-value">2.5372</div>
+                <div class="metric-unit">finale</div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/Shuttle_Encoder_Decoder/Resultats.png" alt="Résultats du modèle" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Résultats finaux de détection d'anomalies sur le dataset Shuttle.</small></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: CONCLUSION -->
+    <section class="mb-5">
+        <h2 class="section-title">6. Conclusion</h2>
+
+        <div class="conclusion-box">
+            <h3>Résumé du Projet</h3>
+
+            <p class="text-justify">
+                Ce projet démontre qu'un <strong>auto-encodeur léger</strong> avec un espace latent de dimension 6 suffit pour détecter efficacement les anomalies dans le dataset Shuttle. L'approche de reconstruction — entraîner le modèle uniquement sur des données normales puis seuiller l'erreur MSE — s'avère robuste et interprétable.
+            </p>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Points Clés</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>F-score de <strong>0,9912</strong> — performance quasi-parfaite sur ce jeu de données</li>
+                <li>Accuracy de <strong>98,62%</strong> — généralisation excellente</li>
+                <li>Architecture symétrique minimaliste — 9 → 6 → 9 avec ReLU</li>
+                <li>Convergence stable atteinte dès la 76ème époque sur 80</li>
+                <li>Seuil optimal déterminé par analyse F-measure, minimisant FP et FN</li>
+            </ul>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Améliorations Futures</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li><strong>Variational Autoencoder (VAE) :</strong> Modélisation probabiliste de l'espace latent pour une meilleure généralisation</li>
+                <li><strong>Recherche de seuil automatique :</strong> Optimisation du seuil par validation croisée</li>
+                <li><strong>Autres datasets :</strong> Tester la robustesse sur KDD Cup, MNIST-Anomaly, etc.</li>
+                <li><strong>LSTM Autoencoder :</strong> Exploiter la dimension temporelle des données de capteurs</li>
+            </ul>
+        </div>
+
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Ressources & Liens</h3>
+
+        <a href="https://github.com/" class="github-link" target="_blank">
+            <i class="fab fa-github"></i> Voir le Code Source sur GitHub
+        </a>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: var(--light); border-radius: 8px;">
+            <h5 style="color: var(--dark); margin-bottom: 1rem;">Documents Associés</h5>
+            <ul style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Dataset :</strong> UCI Shuttle Dataset — 9 features de capteurs, classes normale/anomalie</li>
+                <li><strong>Code Source :</strong> Modèle, entraînement et scripts d'évaluation sur GitHub</li>
+            </ul>
+        </div>
+    </section>
+
+</div>
+
+<!-- Modal for image expansion -->
+<div id="imageModal" class="modal">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+    function openImageModal(imageSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imageSrc;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('imageModal');
+        if (event.target === modal) {
+            closeImageModal();
+        }
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+
+    document.querySelectorAll('.row-image img').forEach(img => {
+        img.style.cursor = 'pointer';
+        img.onclick = function() {
+            openImageModal(this.src);
+        };
+    });
+</script>
+
+</body>
+</html>
