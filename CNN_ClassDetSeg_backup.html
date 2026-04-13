@@ -362,6 +362,10 @@
                     The classification model identifies the <strong>presence or absence of each shape</strong> in an image. Inspired by AlexNet, the architecture consists of four segments (Conv + ReLU + MaxPool) for progressive feature extraction, followed by two fully-connected layers.
                 </p>
 
+                <p class="text-justify" style="margin-top: 1rem;">
+                    The network scans the image layer by layer, each pass compressing what it sees into a shorter, more abstract description. Think of it like reading a paragraph, then a sentence, then a single keyword. That final summary feeds a decision layer that answers three independent yes/no questions: circle present? Triangle? Cross?
+                </p>
+
                 <div class="model-overview">
                     <h5>Design Choices</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
@@ -394,6 +398,10 @@
                 
                 <p class="text-justify">
                     The detection model generates <strong>bounding boxes</strong> around identified shapes. Inspired by YOLO, the network consists of three convolution segments with BatchNorm and LeakyReLU, producing an output of dimension (1, 3, 7) for a 3×7 grid.
+                </p>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Detection goes further than classification: the model must also draw a box around each shape it finds. The network divides the image into a 3×7 grid and asks every cell whether a shape is present and, if so, exactly where. Batch normalization keeps each layer's outputs in a consistent numerical range, which prevents training from becoming erratic as the model learns.
                 </p>
 
                 <div class="model-overview">
@@ -430,6 +438,10 @@
                     The segmentation model classifies <strong>each pixel</strong> according to its class (circle, triangle, cross or background). The U-Net architecture uses an encoder to extract features and a decoder to reconstruct the image, with skip-connections to preserve spatial information.
                 </p>
 
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Where detection draws a box, segmentation labels every single pixel. The encoder works like squinting at the image: you lose fine detail, but the big shapes become obvious, layer by layer. Skip connections carry fine-grained detail from earlier layers forward, so the decoder can reconstruct sharp boundaries when rebuilding the pixel map.
+                </p>
+
                 <div class="model-overview">
                     <h5>Design Choices</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
@@ -462,6 +474,10 @@
 
         <div class="row">
             <div class="col-lg-8">
+                <p class="text-justify">
+                    Getting from 83% to 96% accuracy came down to one problem: the model was memorizing the training data instead of learning from it. Here's what that investigation looked like.
+                </p>
+
                 <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Performance Optimizations</h4>
 
                 <h5 style="margin-top: 1.5rem;">Dataset & Preprocessing</h5>
@@ -589,6 +605,8 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
         <!-- Classification Results -->
         <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">4.1 Classification</h3>
 
+        <p class="text-justify">96% test accuracy means the model correctly identifies which shapes are present nearly 24 times out of 25, trained on fewer than 270 images.</p>
+
         <div class="metrics-grid">
             <div class="metric-card" style="border: 2px solid var(--primary); background: #f0f4ff;">
                 <div class="metric-label">Test Accuracy</div>
@@ -639,6 +657,8 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
 
         <!-- Detection Results -->
         <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.2 Object Detection</h3>
+
+        <p class="text-justify">78.3% mAP means the model finds the right object in the right place about 4 times out of 5, within the strict parameter budget required for embedded deployment.</p>
 
         <div class="metrics-grid">
             <div class="metric-card">
@@ -693,6 +713,8 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
 
         <!-- Segmentation Results -->
         <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Semantic Segmentation</h3>
+
+        <p class="text-justify">86% IoU means the model correctly labels roughly 6 out of every 7 pixels, achieved with under 1 million parameters and fewer than 300 training images.</p>
 
         <div class="metrics-grid">
             <div class="metric-card" style="border: 2px solid var(--primary); background: #f0f4ff;">
@@ -766,6 +788,15 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
                 <li>Modular and well-documented code — Adaptable for other image tasks</li>
             </ul>
 
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Learnings</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>BatchNorm is essential for stability, especially in detection</li>
+                <li>Skip-connections are crucial for preserving spatial information</li>
+                <li>Adapting architecture to data is more important than using standard architectures unchanged</li>
+                <li>Monitoring validation curves allows quick identification of overfitting problems</li>
+                <li>Hyperparameter optimization must be iterative and based on curve observations</li>
+            </ul>
+
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
                 <li><strong>Data Augmentation:</strong> Random rotations, zooms, translations to improve generalization</li>
@@ -774,15 +805,6 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
                 <li><strong>Transfer Learning:</strong> Fine-tune on pre-trained models (ResNet, MobileNet) if resources allow</li>
                 <li><strong>Quantization:</strong> Reduce model size for deployment on limited hardware</li>
                 <li><strong>Test on Real Data:</strong> Validate on actual scanner images (domain transfer)</li>
-            </ul>
-
-            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Learnings</h4>
-            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li>BatchNorm is essential for stability, especially in detection</li>
-                <li>Skip-connections are crucial for preserving spatial information</li>
-                <li>Adapting architecture to data is more important than using standard architectures unchanged</li>
-                <li>Monitoring validation curves allows quick identification of overfitting problems</li>
-                <li>Hyperparameter optimization must be iterative and based on curve observations</li>
             </ul>
         </div>
 
