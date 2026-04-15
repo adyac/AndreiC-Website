@@ -272,11 +272,14 @@
                     This project implements an <strong>autoencoder</strong> neural network dedicated to anomaly detection on the <em>Shuttle</em> dataset. The model learns to reconstruct only normal data in order to identify deviations during the test phase.
                 </p>
 
+                <p class="text-justify">
+                    Parameter selection is based on a statistical analysis of the data to ensure optimal compression.
+                </p>
 
                 <div class="model-overview">
                     <h5>Selected Parameters</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Latent Space (k = 6):</strong> Based on eigenvalue analysis. Six significant values stand out from the spectrum.</li>
+                        <li><strong>Latent Space (k = 6):</strong> Based on eigenvalue analysis — 6 significant values are observed</li>
                         <li><strong>Learning Rate:</strong> <strong>0.0015</strong> — ensures smooth loss stabilization</li>
                         <li><strong>Optimizer:</strong> <strong>Adam</strong> — efficient convergence</li>
                         <li><strong>Epochs:</strong> <strong>80</strong> — convergence plateau reached around epoch 76</li>
@@ -310,9 +313,6 @@
                     <img src="img/Shuttle_Encoder_Decoder/Epoch_vs_MSE_loss.png" alt="MSE Loss Curve" style="max-width: 100%;">
                     <p class="mt-2 text-muted"><small>Figure 1: MSE loss evolution (K=6) showing model stabilization.</small></p>
                 </div>
-                <p class="text-justify" style="margin-top: 1rem;">
-                    Convergence by epoch 76 of 80 means the model extracted all learnable structure from the normal class without over-training. A plateau this early in the schedule confirms k=6 is well-matched to the intrinsic dimensionality of the data. Choosing the latent dimension by eigenvalue analysis rather than grid search produced this clean convergence at a fraction of the compute cost.
-                </p>
             </div>
         </div>
     </section>
@@ -375,12 +375,20 @@
     <section class="mb-5 pb-5 border-bottom">
         <h2 class="section-title">3. Training Strategy</h2>
 
+        <div class="row mb-4">
+            <div class="col-lg-12">
+                <p class="text-justify lead">
+                    Training is optimized to process normal data only, effectively ignoring anomalies.
+                </p>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-6">
                 <div class="model-overview">
                     <h5>Training Parameters</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Batch Size:</strong> <strong>256</strong>, balancing computation throughput and generalization</li>
+                        <li><strong>Batch Size:</strong> <strong>256</strong> — maximizes computation speed while avoiding excessive generalization</li>
                         <li><strong>Training:</strong> Exclusively on normal class data (class 1)</li>
                         <li><strong>Loss Function:</strong> Mean Squared Error (MSE)</li>
                     </ul>
@@ -439,14 +447,10 @@
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
                     <img src="img/Shuttle_Encoder_Decoder/histogramme_pertes2.png" alt="Loss Histogram (zoomed)" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 4: Zoomed view, separation between normal and anomalous distributions.</small></p>
+                    <p class="mt-2 text-muted"><small>Figure 4: Zoomed view — separation between normal and anomalous distributions.</small></p>
                 </div>
             </div>
         </div>
-
-        <p class="text-justify" style="margin-top: 1rem;">
-            The clear gap between normal and anomalous reconstruction error distributions means threshold selection carries low risk. Overlapping distributions would force a precision-recall tradeoff with no clean decision boundary. Training exclusively on normal data creates this separation: the network never learns to reconstruct anomalies, so anomalous inputs consistently produce higher errors.
-        </p>
 
         <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">F-Measure & Accuracy Curve</h3>
 
@@ -458,15 +462,15 @@
                 </div>
             </div>
         </div>
-
-        <p class="text-justify" style="margin-top: 1rem;">
-            A sharp F-measure peak at a single threshold value means the optimal cut point is stable and not sensitive to small calibration errors in deployment. A broad or flat peak would signal fragile behavior under distribution shift. The sharpness follows directly from the distributional separation shown in the histograms above.
-        </p>
     </section>
 
     <!-- SECTION 5: RESULTS -->
     <section class="mb-5 pb-5 border-bottom">
         <h2 class="section-title">5. Results</h2>
+
+        <p class="text-justify lead">
+            Final performance demonstrates the model's high precision on this dataset.
+        </p>
 
         <div class="metrics-grid">
             <div class="metric-card">
@@ -486,10 +490,6 @@
             </div>
         </div>
 
-        <p class="text-justify" style="margin-top: 1rem;">
-            An F-score of 0.9912 with 98.62% accuracy means the model misclassifies fewer than 2 samples in 100. For a sensor anomaly detection system, false negatives carry higher operational risk than false alarms, and this result keeps both rates low. Normalizing the test set using training statistics rather than the test distribution prevented anomalies from distorting the normalization scale, which directly contributed to this result.
-        </p>
-
         <div class="row mt-4">
             <div class="col-lg-12">
                 <div class="row-image" style="text-align: center;">
@@ -508,14 +508,14 @@
             <h3>Project Summary</h3>
 
             <p class="text-justify">
-                This project demonstrates that a <strong>lightweight autoencoder</strong> with a latent space of dimension 6 is sufficient to effectively detect anomalies in the Shuttle dataset. The reconstruction approach trains only on normal data, then thresholds the MSE error to classify. This proves robust and interpretable.
+                This project demonstrates that a <strong>lightweight autoencoder</strong> with a latent space of dimension 6 is sufficient to effectively detect anomalies in the Shuttle dataset. The reconstruction approach — training only on normal data then thresholding the MSE error — proves to be robust and interpretable.
             </p>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Highlights</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li>F-score of <strong>0.9912</strong>, near-perfect for this dataset</li>
-                <li>Accuracy of <strong>98.62%</strong>, with strong generalization</li>
-                <li>Minimalist symmetric architecture: 9 → 6 → 9 with ReLU</li>
+                <li>F-score of <strong>0.9912</strong> — near-perfect performance on this dataset</li>
+                <li>Accuracy of <strong>98.62%</strong> — excellent generalization</li>
+                <li>Minimalist symmetric architecture — 9 → 6 → 9 with ReLU</li>
                 <li>Stable convergence reached by epoch 76 out of 80</li>
                 <li>Optimal threshold determined by F-measure analysis, minimizing FP and FN</li>
             </ul>

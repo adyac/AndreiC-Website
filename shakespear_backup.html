@@ -116,9 +116,7 @@
             <div class="row mb-5">
                 <div class="col-12 text-center"> <h2 class="mb-4">Project Overview</h2>
                     <p class="text-justify lead">
-                        This project focuses on the development of a <strong>GPT-style Transformer</strong> trained specifically on the <em>tiny_shakespeare</em> dataset. 
-                        The goal was to build a generative model from scratch that could predict subsequent tokens in a sequence, effectively mimicking the 
-                        unique syntax and prose of William Shakespeare.
+                        This project focuses on the development of a <strong>GPT-style Transformer</strong> trained specifically on the <em>tiny_shakespeare</em> dataset.
                     </p>
                     <div class="py-2"></div>
                 </div>
@@ -137,8 +135,8 @@
                     Before training, raw data undergoes preprocessing. We utilized a <strong>90/5/5 split</strong> (Training, Validation, Test). Unlike the standard 70/15/15 split, this maximizes training volume for the <code>tiny_shakespeare</code> dataset, allowing the model to better capture linguistic subtleties.
                 </p>
                 <ul>
-                    <li><strong>1. Preparing the Text (String and Words)</strong> 
-                        The process begins by loading the entire Shakespeare dataset as one continuous string. To clean the data, the text is converted to lowercase, and punctuation is isolated so that marks like periods or commas are treated as separate tokens. This ensures that "king" and "king," are seen as the same fundamental word. The big string is then split into a list of individual words and punctuation marks.</li>
+                    <li><strong>1. Preparing the Text (String and Words)</strong>
+                        The text is converted to lowercase and punctuation is isolated as separate tokens, so "king" and "king," map to the same word stem. This prevents the vocabulary from inflating with punctuation variants of the same word.</li>
                     <li><strong>Sequencing:</strong> Fixed length ($N=64$) with overlap to increase example density.</li>
                 </ul>
             </div>
@@ -151,7 +149,7 @@
             <div class="col-md-6 order-md-2">
                 <h2>2. Embedding Generation</h2>
                 <p class="text-justify">
-                    The model converts integer indices into vectors rich in semantic information:
+                    Each token is mapped to a learned 512-dimensional vector, giving the model a continuous space where semantically related words cluster together. Position embeddings are added element-wise to each token vector, making word order explicit to a model that otherwise treats input as a set rather than a sequence. Using learnable rather than fixed sinusoidal positional encodings lets the model adapt position representations to the statistical patterns of the training corpus, at the cost of requiring sufficient training data for those positions to converge.
                 </p>
                 <ul>
                     <li><strong>Token Embedding:</strong> Vocabulary projected into $D=512$ space.</li>
@@ -168,9 +166,7 @@
             <div class="col-md-6">
                 <h2>3. Architecture & Attention</h2>
                 <p class="text-justify">
-                    Based on "Attention Is All You Need," we built a <strong>Decoder-Only</strong> Transformer. 
-                    The core is the Causal Multi-Head Attention (8 heads), which splits the 512-dimension space into 8 subspaces of 64. 
-                    This allows the model to focus on various linguistic aspects like grammar and rhyme simultaneously.
+                    A decoder-only Transformer generates tokens autoregressively by attending over all prior positions through causal multi-head attention, then projecting to a vocabulary distribution. No source sequence exists to encode, so an encoder-decoder stack would add parameters and training complexity without benefit. Eight attention heads partition the 512-dimensional representation into parallel subspaces, letting the model track multiple dependency types simultaneously, at the cost of attention complexity scaling quadratically with sequence length.
                 </p>
                 <div class="bg-light p-3 border-start border-primary border-4">
                     <strong>Causal Mask:</strong> A lower triangular matrix ($-\infty$) prevents the model from "seeing the future" during training.

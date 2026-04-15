@@ -132,7 +132,7 @@
                 <h2>1. Text to Token Conversion</h2>
                 
                 <p class="text-justify">
-                    Before training, raw data undergoes preprocessing. We utilized a <strong>90/5/5 split</strong> (Training, Validation, Test). Unlike the standard 70/15/15 split, this maximizes training volume for the <code>tiny_shakespeare</code> dataset, allowing the model to better capture linguistic subtleties.
+                    We utilized a <strong>90/5/5 split</strong> (Training, Validation, Test). Unlike the standard 70/15/15 split, this maximizes training volume for the <code>tiny_shakespeare</code> dataset, allowing the model to better capture linguistic subtleties.
                 </p>
                 <ul>
                     <li><strong>1. Preparing the Text (String and Words)</strong>
@@ -231,6 +231,12 @@
                         <p class="mb-0">Our most powerful model. Stacked blocks allow for higher levels of abstraction, improving overall coherence.</p>
                     </div>
                 </div>
+            </div>
+
+            <div class="col-12">
+                <p class="text-justify">
+                    Each configuration in this sequence isolates one variable: stopping mechanism, head count, or model depth. Comparing output coherence across configurations, rather than tracking a single loss metric, is the appropriate evaluation approach for a generative model where quality is inherently subjective. The coherence improvement from configuration 3 to 5 confirms that stacking transformer layers contributes more to output quality than increasing head count or embedding dimension alone at this scale.
+                </p>
             </div>
         </div>
 
