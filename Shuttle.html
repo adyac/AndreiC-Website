@@ -262,9 +262,9 @@
 <!-- Main Content -->
 <div class="container my-5">
 
-    <!-- SECTION 1: HYPERPARAMETERS -->
+    <!-- SECTION 1: CONTEXT & OBJECTIVE -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">1. Hyperparameter Selection</h2>
+        <h2 class="section-title">1. Context & Objective</h2>
 
         <div class="row mb-4">
             <div class="col-lg-7">
@@ -275,30 +275,6 @@
                 <p class="text-justify">
                     The NASA Shuttle dataset contains readings from 9 onboard sensors that monitor the vehicle's operational state during flight. When a sensor develops a fault, its output deviates from the patterns observed under normal conditions. A neural network trained only on normal data learns to accurately reconstruct healthy sensor readings. Any input it cannot reconstruct well becomes a candidate anomaly, turning a manual inspection problem into an automated, always-on detection pipeline.
                 </p>
-
-
-                <div class="model-overview">
-                    <h5>Selected Parameters</h5>
-                    <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Latent Space (k = 6):</strong> Based on eigenvalue analysis. Six significant values stand out from the spectrum.</li>
-                        <li><strong>Learning Rate:</strong> <strong>0.0015</strong> — ensures smooth loss stabilization</li>
-                        <li><strong>Optimizer:</strong> <strong>Adam</strong> — efficient convergence</li>
-                        <li><strong>Epochs:</strong> <strong>80</strong> — convergence plateau reached around epoch 76</li>
-                    </ul>
-                </div>
-
-                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Eigenvalue Analysis</h4>
-                <p class="text-justify">
-                    Eigenvalues measure how much variance in the data each component captures. When computed for the Shuttle dataset, 6 values are significantly larger than the remaining 3, meaning 6 directions in the sensor space contain almost all the meaningful signal. Setting k=6 forces the autoencoder to compress the 9 input features into exactly those 6 informative directions, discarding noise while preserving the structure needed to detect deviations.
-                </p>
-                <p class="text-justify">
-                    The choice of k=6 is justified by the following spectral analysis, where the last 6 eigenvalues clearly separate from the first 3:
-                </p>
-                <div class="eigenvalue-list">
-                    λ₁ = 7.9204 × 10⁻⁴ &nbsp;|&nbsp; λ₂ = 1.2390 × 10⁻⁴ &nbsp;|&nbsp; λ₃ = 2.3841 × 10⁻³<br>
-                    <strong>λ₄ = 6.2564 × 10⁻¹</strong> &nbsp;|&nbsp; <strong>λ₅ = 9.8503 × 10⁻¹</strong> &nbsp;|&nbsp; <strong>λ₆ = 1.0004</strong><br>
-                    <strong>λ₇ = 1.0245</strong> &nbsp;|&nbsp; <strong>λ₈ = 1.7436</strong> &nbsp;|&nbsp; <strong>λ₉ = 3.6172</strong>
-                </div>
             </div>
 
             <div class="col-lg-5">
@@ -312,21 +288,13 @@
                         <div class="badge-tech">Scikit-learn</div>
                     </div>
                 </div>
-
-                <div class="row-image" style="text-align: center; margin-top: 1.5rem;">
-                    <img src="img/Shuttle_Encoder_Decoder/Epoch_vs_MSE_loss.png" alt="MSE Loss Curve" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 1: MSE loss evolution (K=6) showing model stabilization.</small></p>
-                </div>
-                <p class="text-justify" style="margin-top: 1rem;">
-                    Convergence by epoch 76 of 80 means the model extracted all learnable structure from the normal class without over-training. A plateau this early in the schedule confirms k=6 is well-matched to the intrinsic dimensionality of the data. Choosing the latent dimension by eigenvalue analysis rather than grid search produced this clean convergence at a fraction of the compute cost.
-                </p>
             </div>
         </div>
     </section>
 
-    <!-- SECTION 2: ARCHITECTURE -->
+    <!-- SECTION 2: ARCHITECTURE & MODELS -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">2. Network Architecture</h2>
+        <h2 class="section-title">2. Architecture & Models</h2>
 
         <div class="row mb-4">
             <div class="col-lg-7">
@@ -372,21 +340,43 @@
             <div class="col-lg-5">
                 <div class="row-image" style="text-align: center;">
                     <img src="img/Shuttle_Encoder_Decoder/architecture.png" alt="Encoder-Decoder Architecture" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 2: Encoder-Decoder network architecture diagram.</small></p>
+                    <p class="mt-2 text-muted"><small>Figure 1: Encoder-Decoder network architecture diagram.</small></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latent Space Justification -->
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <h4 style="margin-bottom: 0.75rem;">Latent Space Justification (k = 6)</h4>
+                <p class="text-justify">
+                    Eigenvalues measure how much variance in the data each component captures. When computed for the Shuttle dataset, 6 values are significantly larger than the remaining 3, meaning 6 directions in the sensor space contain almost all the meaningful signal. Setting k=6 forces the autoencoder to compress the 9 input features into exactly those 6 informative directions, discarding noise while preserving the structure needed to detect deviations.
+                </p>
+                <p class="text-justify">
+                    The choice of k=6 is justified by the following spectral analysis, where the last 6 eigenvalues clearly separate from the first 3:
+                </p>
+                <div class="eigenvalue-list">
+                    λ₁ = 7.9204 × 10⁻⁴ &nbsp;|&nbsp; λ₂ = 1.2390 × 10⁻⁴ &nbsp;|&nbsp; λ₃ = 2.3841 × 10⁻³<br>
+                    <strong>λ₄ = 6.2564 × 10⁻¹</strong> &nbsp;|&nbsp; <strong>λ₅ = 9.8503 × 10⁻¹</strong> &nbsp;|&nbsp; <strong>λ₆ = 1.0004</strong><br>
+                    <strong>λ₇ = 1.0245</strong> &nbsp;|&nbsp; <strong>λ₈ = 1.7436</strong> &nbsp;|&nbsp; <strong>λ₉ = 3.6172</strong>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SECTION 3: TRAINING STRATEGY -->
+    <!-- SECTION 3: IMPLEMENTATION & KEY OPTIMIZATIONS -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">3. Training Strategy</h2>
+        <h2 class="section-title">3. Implementation & Key Optimizations</h2>
 
-        <div class="row">
+        <div class="row mb-4">
             <div class="col-lg-6">
                 <div class="model-overview">
-                    <h5>Training Parameters</h5>
+                    <h5>Selected Hyperparameters</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Latent Space (k = 6):</strong> Based on eigenvalue analysis. Six significant values stand out from the spectrum.</li>
+                        <li><strong>Learning Rate:</strong> <strong>0.0015</strong> — ensures smooth loss stabilization</li>
+                        <li><strong>Optimizer:</strong> <strong>Adam</strong> — efficient convergence</li>
+                        <li><strong>Epochs:</strong> <strong>80</strong> — convergence plateau reached around epoch 76</li>
                         <li><strong>Batch Size:</strong> <strong>256</strong>, balancing computation throughput and generalization</li>
                         <li><strong>Training:</strong> Exclusively on normal class data (class 1)</li>
                         <li><strong>Loss Function:</strong> Mean Squared Error (MSE)</li>
@@ -405,15 +395,30 @@
                 </div>
             </div>
         </div>
+
+        <div class="row mt-2">
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/Shuttle_Encoder_Decoder/Epoch_vs_MSE_loss.png" alt="MSE Loss Curve" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Figure 2: MSE loss evolution (K=6) showing model stabilization.</small></p>
+                </div>
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Convergence by epoch 76 of 80 means the model extracted all learnable structure from the normal class without over-training. A plateau this early in the schedule confirms k=6 is well-matched to the intrinsic dimensionality of the data. Choosing the latent dimension by eigenvalue analysis rather than grid search produced this clean convergence at a fraction of the compute cost.
+                </p>
+            </div>
+        </div>
     </section>
 
-    <!-- SECTION 4: THRESHOLD DETERMINATION -->
+    <!-- SECTION 4: RESULTS -->
     <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">4. Optimal Threshold Determination</h2>
+        <h2 class="section-title">4. Results</h2>
 
         <p class="text-justify lead">
             Final classification relies on computing the <strong>reconstruction error (MSE)</strong>. A threshold is determined to separate "normal" from "anomalous".
         </p>
+
+        <!-- Threshold Determination -->
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Threshold Determination</h3>
 
         <div class="row mb-4">
             <div class="col-lg-6">
@@ -434,7 +439,7 @@
             </div>
         </div>
 
-        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Reconstruction Loss Histograms</h3>
+        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Reconstruction Loss Histograms</h4>
 
         <div class="row">
             <div class="col-lg-6">
@@ -446,7 +451,7 @@
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
                     <img src="img/Shuttle_Encoder_Decoder/histogramme_pertes2.png" alt="Loss Histogram (zoomed)" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 4: Zoomed view, separation between normal and anomalous distributions.</small></p>
+                    <p class="mt-2 text-muted"><small>Figure 3: Zoomed view, separation between normal and anomalous distributions.</small></p>
                 </div>
             </div>
         </div>
@@ -459,13 +464,13 @@
             In other words, normal sensor readings cluster below a reconstruction error of roughly 0.03, while anomalous readings consistently fall well above that value. The threshold of 0.03 sits precisely at the gap visible in the zoomed histogram, making it the natural decision boundary where the two distributions are most separated. This value was then used as the reference threshold for the F1-score curve in the section below: the curve peaks at that exact point, confirming that 0.03 simultaneously minimizes missed anomalies and false alarms and is the optimal operating threshold for this model.
         </p>
 
-        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">F-Measure & Accuracy Curve</h3>
+        <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">F-Measure & Accuracy Curve</h4>
 
         <div class="row">
             <div class="col-lg-12">
                 <div class="row-image" style="text-align: center;">
                     <img src="img/Shuttle_Encoder_Decoder/FMesure.png" alt="F-Measure Curve" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Figure 5: F-measure and Accuracy evolution as a function of the selected threshold.</small></p>
+                    <p class="mt-2 text-muted"><small>Figure 4: F-measure and Accuracy evolution as a function of the selected threshold.</small></p>
                 </div>
             </div>
         </div>
@@ -473,11 +478,9 @@
         <p class="text-justify" style="margin-top: 1rem;">
             A sharp F-measure peak at a single threshold value means the optimal cut point is stable and not sensitive to small calibration errors in deployment. A broad or flat peak would signal fragile behavior under distribution shift. The sharpness follows directly from the distributional separation shown in the histograms above.
         </p>
-    </section>
 
-    <!-- SECTION 5: RESULTS -->
-    <section class="mb-5 pb-5 border-bottom">
-        <h2 class="section-title">5. Results</h2>
+        <!-- Final Metrics -->
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Final Performance Metrics</h3>
 
         <div class="metrics-grid">
             <div class="metric-card">
@@ -505,15 +508,15 @@
             <div class="col-lg-12">
                 <div class="row-image" style="text-align: center;">
                     <img src="img/Shuttle_Encoder_Decoder/Resultats.png" alt="Model Results" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Final anomaly detection results on the Shuttle dataset.</small></p>
+                    <p class="mt-2 text-muted"><small>Figure 5: Final anomaly detection results on the Shuttle dataset.</small></p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SECTION 6: CONCLUSION -->
+    <!-- SECTION 5: CONCLUSION & FUTURE PERSPECTIVES -->
     <section class="mb-5">
-        <h2 class="section-title">6. Conclusion</h2>
+        <h2 class="section-title">5. Conclusion & Future Perspectives</h2>
 
         <div class="conclusion-box">
             <h3>Project Summary</h3>

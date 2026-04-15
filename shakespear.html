@@ -6,19 +6,19 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
-    
+
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"> 
-    
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-    
+
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
     <style>
@@ -50,17 +50,17 @@
         /* Fullscreen Modal Background */
         .modal {
             display: none; /* CHANGED: This must be none so it starts hidden */
-            position: fixed; 
-            z-index: 9999; 
+            position: fixed;
+            z-index: 9999;
             left: 0;
             top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden; 
-            background-color: rgba(0,0,0,0.95); 
-            
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: rgba(0,0,0,0.95);
+
             /* Keep these for centering, but they only activate when display is changed to flex */
-            align-items: center; 
+            align-items: center;
             justify-content: center;
         }
 
@@ -74,13 +74,13 @@
         }
 
         /* Zoom Animation */
-        .modal-content {  
+        .modal-content {
             animation-name: zoom;
             animation-duration: 0.4s;
         }
 
         @keyframes zoom {
-            from {transform:scale(0.7); opacity: 0;} 
+            from {transform:scale(0.7); opacity: 0;}
             to {transform:scale(1); opacity: 1;}
         }
 
@@ -112,42 +112,33 @@
         </div>
     </div>
 
+    <!-- 1. Context & Objective -->
     <section class="container my-5 pb-5 border-bottom">
-            <div class="row mb-5">
-                <div class="col-12 text-center"> <h2 class="mb-4">Project Overview</h2>
-                    <p class="text-justify lead">
-                        This project focuses on the development of a <strong>GPT-style Transformer</strong> trained specifically on the <em>tiny_shakespeare</em> dataset.
-                    </p>
-                    <div class="py-2"></div>
-                </div>
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="mb-4">1. Context & Objective</h2>
+                <p class="text-justify lead">
+                    This project focuses on the development of a <strong>GPT-style Transformer</strong> trained specifically on the <em>tiny_shakespeare</em> dataset. The goal is to build a decoder-only language model capable of generating coherent Shakespearean text, and to systematically explore how architectural choices — embedding size, number of attention heads, and depth — affect generation quality.
+                </p>
+                <div class="py-2"></div>
             </div>
+        </div>
     </section>
 
     <div class="py-2"></div>
 
-    <section class="container my-5 pb-5">
-        
-        <div class="row mb-5">
-            <div class="col-md-6">
-                <h2>1. Text to Token Conversion</h2>
-                
-                <p class="text-justify">
-                    We utilized a <strong>90/5/5 split</strong> (Training, Validation, Test). Unlike the standard 70/15/15 split, this maximizes training volume for the <code>tiny_shakespeare</code> dataset, allowing the model to better capture linguistic subtleties.
-                </p>
-                <ul>
-                    <li><strong>1. Preparing the Text (String and Words)</strong>
-                        The text is converted to lowercase and punctuation is isolated as separate tokens, so "king" and "king," map to the same word stem. This prevents the vocabulary from inflating with punctuation variants of the same word.</li>
-                    <li><strong>Sequencing:</strong> Fixed length ($N=64$) with overlap to increase example density.</li>
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <img src="img/Shakespear/Word2Seq.png" class="img-fluid rounded shadow" onclick="openModal(this.src)">
+    <!-- 2. Architecture & Models -->
+    <section class="container my-5 pb-5 border-bottom">
+
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="mb-2">2. Architecture & Models</h2>
             </div>
         </div>
 
         <div class="row mb-5">
             <div class="col-md-6 order-md-2">
-                <h2>2. Embedding Generation</h2>
+                <h4>Embedding Generation</h4>
                 <p class="text-justify">
                     Each token is mapped to a learned 512-dimensional vector, giving the model a continuous space where semantically related words cluster together. Position embeddings are added element-wise to each token vector, making word order explicit to a model that otherwise treats input as a set rather than a sequence. Using learnable rather than fixed sinusoidal positional encodings lets the model adapt position representations to the statistical patterns of the training corpus, at the cost of requiring sufficient training data for those positions to converge.
                 </p>
@@ -164,7 +155,7 @@
 
         <div class="row mb-5">
             <div class="col-md-6">
-                <h2>3. Architecture & Attention</h2>
+                <h4>Architecture & Attention</h4>
                 <p class="text-justify">
                     A decoder-only Transformer generates tokens autoregressively by attending over all prior positions through causal multi-head attention, then projecting to a vocabulary distribution. No source sequence exists to encode, so an encoder-decoder stack would add parameters and training complexity without benefit. Eight attention heads partition the 512-dimensional representation into parallel subspaces, letting the model track multiple dependency types simultaneously, at the cost of attention complexity scaling quadratically with sequence length.
                 </p>
@@ -177,12 +168,51 @@
             </div>
         </div>
 
+    </section>
+
+    <div class="py-2"></div>
+
+    <!-- 3. Implementation & Key Optimizations -->
+    <section class="container my-5 pb-5 border-bottom">
+
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="mb-2">3. Implementation & Key Optimizations</h2>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h4>Text to Token Conversion</h4>
+                <p class="text-justify">
+                    We utilized a <strong>90/5/5 split</strong> (Training, Validation, Test). Unlike the standard 70/15/15 split, this maximizes training volume for the <code>tiny_shakespeare</code> dataset, allowing the model to better capture linguistic subtleties.
+                </p>
+                <ul>
+                    <li><strong>Preparing the Text (String and Words):</strong>
+                        The text is converted to lowercase and punctuation is isolated as separate tokens, so "king" and "king," map to the same word stem. This prevents the vocabulary from inflating with punctuation variants of the same word.</li>
+                    <li><strong>Sequencing:</strong> Fixed length ($N=64$) with overlap to increase example density.</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <img src="img/Shakespear/Word2Seq.png" class="img-fluid rounded shadow" onclick="openModal(this.src)">
+            </div>
+        </div>
+
+    </section>
+
+    <div class="py-2"></div>
+
+    <!-- 4. Results -->
+    <section class="container my-5 pb-5 border-bottom">
+
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="mb-2">4. Results</h2>
+            </div>
+        </div>
 
         <div class="row">
-            <div class="col-12 text-center mb-4">
-                <h2>4. Model Evolution & Text Generation Results</h2>
-            </div>
-            
+
             <div class="col-12 mb-5">
                 <div class="card shadow-sm">
                     <img src="img/Shakespear/Gen_sansLimite.png" class="card-img-top" style="max-height: 500px; object-fit: contain; background: #000;" onclick="openModal(this.src)">
@@ -233,14 +263,28 @@
                 </div>
             </div>
 
+        </div>
+
+    </section>
+
+    <div class="py-2"></div>
+
+    <!-- 5. Conclusion & Future Perspectives -->
+    <section class="container my-5 pb-5">
+
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="mb-2">5. Conclusion & Future Perspectives</h2>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-12">
                 <p class="text-justify">
                     Each configuration in this sequence isolates one variable: stopping mechanism, head count, or model depth. Comparing output coherence across configurations, rather than tracking a single loss metric, is the appropriate evaluation approach for a generative model where quality is inherently subjective. The coherence improvement from configuration 3 to 5 confirms that stacking transformer layers contributes more to output quality than increasing head count or embedding dimension alone at this scale.
                 </p>
             </div>
         </div>
-
-
 
     </section>
 
@@ -265,10 +309,10 @@
         function closeModal() {
             var modal = document.getElementById("myModal");
             var navbar = document.querySelector('.navbar');
-            
+
             modal.style.display = "none";
             if (navbar) navbar.style.display = 'block';
-            
+
             // Re-enable scrolling
             document.body.style.overflow = "auto";
         }
