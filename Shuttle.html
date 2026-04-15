@@ -272,6 +272,10 @@
                     This project implements an <strong>autoencoder</strong> neural network dedicated to anomaly detection on the <em>Shuttle</em> dataset. The model learns to reconstruct only normal data in order to identify deviations during the test phase.
                 </p>
 
+                <p class="text-justify">
+                    The NASA Shuttle dataset contains readings from 9 onboard sensors that monitor the vehicle's operational state during flight. When a sensor develops a fault, its output deviates from the patterns observed under normal conditions. A neural network trained only on normal data learns to accurately reconstruct healthy sensor readings. Any input it cannot reconstruct well becomes a candidate anomaly, turning a manual inspection problem into an automated, always-on detection pipeline.
+                </p>
+
 
                 <div class="model-overview">
                     <h5>Selected Parameters</h5>
@@ -285,12 +289,15 @@
 
                 <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Eigenvalue Analysis</h4>
                 <p class="text-justify">
-                    The choice of k=6 for the latent space is justified by the following spectral analysis, where 6 eigenvalues clearly stand out:
+                    Eigenvalues measure how much variance in the data each component captures. When computed for the Shuttle dataset, 6 values are significantly larger than the remaining 3, meaning 6 directions in the sensor space contain almost all the meaningful signal. Setting k=6 forces the autoencoder to compress the 9 input features into exactly those 6 informative directions, discarding noise while preserving the structure needed to detect deviations.
+                </p>
+                <p class="text-justify">
+                    The choice of k=6 is justified by the following spectral analysis, where the last 6 eigenvalues clearly separate from the first 3:
                 </p>
                 <div class="eigenvalue-list">
                     λ₁ = 7.9204 × 10⁻⁴ &nbsp;|&nbsp; λ₂ = 1.2390 × 10⁻⁴ &nbsp;|&nbsp; λ₃ = 2.3841 × 10⁻³<br>
-                    λ₄ = 6.2564 × 10⁻¹ &nbsp;|&nbsp; λ₅ = 9.8503 × 10⁻¹ &nbsp;|&nbsp; <strong>λ₆ = 1.0004</strong><br>
-                    λ₇ = 1.0245 &nbsp;|&nbsp; λ₈ = 1.7436 &nbsp;|&nbsp; λ₉ = 3.6172
+                    <strong>λ₄ = 6.2564 × 10⁻¹</strong> &nbsp;|&nbsp; <strong>λ₅ = 9.8503 × 10⁻¹</strong> &nbsp;|&nbsp; <strong>λ₆ = 1.0004</strong><br>
+                    <strong>λ₇ = 1.0245</strong> &nbsp;|&nbsp; <strong>λ₈ = 1.7436</strong> &nbsp;|&nbsp; <strong>λ₉ = 3.6172</strong>
                 </div>
             </div>
 
@@ -340,7 +347,7 @@
                 </div>
 
                 <p class="text-justify" style="margin-top: 1rem;">
-                    <strong>ReLU</strong> layers after each linear layer introduce the non-linearity needed to capture complex relationships in the data. The absence of output activation allows unconstrained reconstruction of continuous values.
+                    <strong>ReLU</strong> layers after each linear layer introduce the non-linearity needed to capture complex relationships in the data. The absence of output activation allows unconstrained reconstruction of continuous values. Mathematically, ReLU computes f(x) = max(0, x), setting any negative activation to zero and passing positive values through unchanged. This forces the network to build sparse, non-negative internal representations at each layer, which reduces redundancy and prevents any single neuron from dominating the learned compression.
                 </p>
 
                 <div class="metrics-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 1.5rem;">
@@ -446,6 +453,10 @@
 
         <p class="text-justify" style="margin-top: 1rem;">
             The clear gap between normal and anomalous reconstruction error distributions means threshold selection carries low risk. Overlapping distributions would force a precision-recall tradeoff with no clean decision boundary. Training exclusively on normal data creates this separation: the network never learns to reconstruct anomalies, so anomalous inputs consistently produce higher errors.
+        </p>
+
+        <p class="text-justify" style="margin-top: 1rem;">
+            In other words, normal sensor readings cluster below a reconstruction error of roughly 0.03, while anomalous readings consistently fall well above that value. The threshold of 0.03 sits precisely at the gap visible in the zoomed histogram, making it the natural decision boundary where the two distributions are most separated. This value was then used as the reference threshold for the F1-score curve in the section below: the curve peaks at that exact point, confirming that 0.03 simultaneously minimizes missed anomalies and false alarms and is the optimal operating threshold for this model.
         </p>
 
         <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">F-Measure & Accuracy Curve</h3>
