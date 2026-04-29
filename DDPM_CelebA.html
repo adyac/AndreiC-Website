@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>cDDPM — Conditional Diffusion for Image-to-Image Translation</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .text-justify {
+            text-align: justify;
+        }
+
+        .header-strip {
+            margin-bottom: 6rem;
+            background: url(img/pngtreehexbg.png) right no-repeat;
+            background-size: cover;
+            height: 67vh;
+            width: 100%;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            color: black;
+        }
+
+        .header-strip h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .header-strip p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(79, 125, 250, 0.2);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-unit {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            min-height: 300px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .model-overview {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .model-overview h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .model-overview h5 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #333;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--light);
+        }
+
+        .badge-tech {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .github-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #333;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .github-link:hover {
+            color: white;
+            background-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 125, 250, 0.3);
+        }
+
+        .row-image {
+            margin: 1.5rem 0;
+        }
+
+        .row-image img {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .row-image img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(79, 125, 250, 0.2);
+        }
+
+        .conclusion-box {
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .conclusion-box h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .architecture-diagram {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            margin: 1.5rem 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Project Header -->
+<div class="header-strip">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Conditional Denoising Diffusion Probabilistic Model</h1>
+                <p><strong>cDDPM for Facial Attribute Translation and Domain Conversion | GEI898</strong></p>
+                <p style="margin-top: 0.5rem; opacity: 0.9;">University of Sherbrooke</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container my-5">
+
+    <!-- SECTION 1: CONTEXT & OBJECTIVE -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">1. Context & Objective</h2>
+
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <p class="text-justify lead">
+                    This project builds a <strong>conditional denoising diffusion probabilistic model (cDDPM)</strong> for domain-to-domain image translation. The primary task converts male portraits to female and female to male using the CelebA facial attribute dataset. A secondary experiment applies the same architecture to Day2Night landscape conversion.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Technical Goal</h4>
+                <p class="text-justify">
+                    A standard diffusion model generates images from noise with no external guidance. The conditional variant steers that generation toward a target domain using a reference image as input. The model must learn which visual attributes belong to the target domain, transfer them to the output, and do so without discarding the source content entirely.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Translation Tasks</h4>
+                <ul class="text-justify">
+                    <li><strong>Primary task:</strong> Facial attribute translation on the CelebA dataset. Male portraits are converted to female and vice versa.</li>
+                    <li><strong>Secondary task:</strong> Day-to-night landscape conversion, used to benchmark generalization beyond facial data.</li>
+                    <li><strong>Evaluation:</strong> KID (Kernel Inception Distance) measures output quality against the target distribution. Huber Loss tracks training convergence.</li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="model-overview">
+                    <h4>Technology Stack</h4>
+                    <div style="margin-top: 1rem;">
+                        <div class="badge-tech">Python 3.x</div>
+                        <div class="badge-tech">PyTorch</div>
+                        <div class="badge-tech">NumPy</div>
+                        <div class="badge-tech">Matplotlib</div>
+                        <div class="badge-tech">CelebA Dataset</div>
+                    </div>
+                </div>
+
+                <!-- add image: side-by-side comparison of a source (male) sample and the expected target (female) to illustrate domain translation -->
+                <div class="image-placeholder" style="min-height: 220px;">
+                    Source (Male) vs Target (Female)<br>
+                    <small>Domain translation concept</small>
+                </div>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Domain translation: source portrait and expected translated output.</small></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: ARCHITECTURE & MODELS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">2. Architecture & Models</h2>
+
+        <!-- 2.1 U-Net Backbone -->
+        <div class="row mb-4">
+            <div class="col-lg-7">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.1 U-Net Denoising Backbone</h3>
+
+                <p class="text-justify">
+                    The core model is a <strong>U-Net</strong> adapted for iterative denoising. Forward diffusion corrupts the input image by adding noise progressively over timesteps using a <strong>linear scheduler</strong>. At each timestep, the network receives the noisy image plus the conditioning signal and predicts the noise component added at that step. Repeating this prediction in reverse across all timesteps reconstructs a clean, domain-translated image.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Core Architecture Components</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Backbone:</strong> U-Net with contracting encoder, expanding decoder, and skip connections</li>
+                        <li><strong>Noise Scheduler:</strong> Linear scheduler for forward diffusion — noise variance increases uniformly across timesteps</li>
+                        <li><strong>Self-Attention:</strong> Captures long-range spatial dependencies within feature maps</li>
+                        <li><strong>Cross-Attention:</strong> Relates image features directly to the conditioning signal at each layer</li>
+                        <li><strong>Condition Injection:</strong> FiLM (Feature-wise Linear Modulation) applied inside every ResNet block</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    The encoder compresses the noisy input into a compact feature representation by progressively reducing spatial resolution. Skip connections carry high-resolution detail forward to the decoder, preventing fine structure from disappearing in the bottleneck. The decoder rebuilds spatial resolution while using those skip connections to restore sharp boundaries and textures. Predicting noise rather than the clean image directly makes training more numerically stable, since the target is always a well-behaved Gaussian rather than a complex natural image distribution.
+                </p>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/DDPM_CelebA/cDDPM_Architecture.png" alt="U-Net Architecture with FiLM conditioning and attention blocks" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Global U-Net architecture: FiLM conditioning modules and attention layers at each depth.</small></p>
+                </div>
+                <div class="row-image" style="text-align: center; margin-top: 0.5rem;">
+                    <img src="img/DDPM_CelebA/fwd_diffusion.png" alt="Forward diffusion: progressive noise addition via linear scheduler" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Forward diffusion process: the linear scheduler progressively corrupts the image across timesteps.</small></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2.2 FiLM Conditioning Mechanism -->
+        <div class="row mb-4">
+            <div class="col-lg-7 order-lg-2">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 FiLM Conditioning Mechanism</h3>
+
+                <p class="text-justify">
+                    Conditioning is applied through <strong>FiLM (Feature-wise Linear Modulation)</strong>. A lightweight CNN encoder processes the condition image and outputs a compact latent vector. Two linear projections map that vector to a scale factor <strong>γ</strong> and a shift factor <strong>β</strong>. These two parameters modulate every intermediate feature map inside the U-Net ResNet blocks: FiLM(x) = γ ⊙ x + β.
+                </p>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    FiLM applied at every residual block means the conditioning signal reaches both shallow layers, where texture and local structure live, and deep layers, where high-level semantic attributes are represented. Injecting only at the input would lose influence over deep features entirely.
+                </p>
+
+                <div class="model-overview">
+                    <h5>FiLM Modulation Details</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Condition Encoder:</strong> Lightweight CNN maps reference image to a latent vector</li>
+                        <li><strong>Scale (γ):</strong> Multiplies each feature map channel-wise to amplify or suppress activations</li>
+                        <li><strong>Shift (β):</strong> Adds a learned offset per channel after scaling</li>
+                        <li><strong>Scope:</strong> Applied inside every ResNet block in the encoder and decoder</li>
+                        <li><strong>Formula:</strong> FiLM(x) = γ ⊙ x + β, where x is the intermediate feature tensor</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Think of it this way: the conditioning image sends two instructions to every layer of the network. One says "scale up these features, scale down those." The other says "shift everything by this amount." Those instructions are different at every layer because the condition encoder produces a single latent vector that gets projected to layer-specific γ and β pairs. The network learns which features to amplify at each depth to best perform the requested domain shift.
+                </p>
+            </div>
+
+            <div class="col-lg-5 order-lg-1">
+                <!-- add image: detailed technical diagram of ResNet block showing FiLM parameters gamma and beta -->
+                <div class="image-placeholder">
+                    ResNet Block with FiLM<br>
+                    <small>γ (scale) and β (shift) application</small>
+                </div>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>FiLM modulation inside the ResNet block: γ scales and β shifts each feature map channel-wise.</small></p>
+            </div>
+        </div>
+
+        <!-- 2.3 Attention Placement Strategy -->
+        <div class="row mb-4" style="margin-top: 2rem;">
+            <div class="col-lg-12">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.3 Attention Placement Strategy</h3>
+
+                <p class="text-justify">
+                    Attention is not applied uniformly across the network. Each location in the U-Net has a different representational role, and the type of attention placed there was chosen to match that role. The table below summarizes what each attention type contributes at each network location.
+                </p>
+
+                <table class="comparison-table" style="margin-top: 1.5rem;">
+                    <thead>
+                        <tr>
+                            <th>Attention Type</th>
+                            <th>U-Net Feature Maps</th>
+                            <th>Skip Connections</th>
+                            <th>Latent Space (Bottleneck)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>No Attention</strong></td>
+                            <td style="color: #888;">N/A</td>
+                            <td>Direct concatenation only — no filtering</td>
+                            <td style="color: #888;">N/A</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Linear Self-Attention</strong></td>
+                            <td>Ensures spatial coherence of features modulated by the timestep embedding</td>
+                            <td>Encoder features are refined before being forwarded to the decoder</td>
+                            <td style="color: #888;">N/A</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cross-Attention</strong></td>
+                            <td>Selects relevant information from the condition at each position, based on the current noise level</td>
+                            <td>The decoder selectively filters which encoder features are actually useful for reconstruction</td>
+                            <td style="color: #888;">N/A</td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td><strong>Full Self-Attention</strong></td>
+                            <td style="color: #888;">N/A</td>
+                            <td style="color: #888;">N/A</td>
+                            <td>Global coherence at the most compressed point — every position attends to every other</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="model-overview" style="margin-top: 1.5rem;">
+                    <h5>Why This Placement Matters</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Feature maps (high resolution):</strong> Linear Self-Attention is used here because full attention would be prohibitively expensive at large spatial sizes. It maintains temporal and spatial consistency across feature channels without quadratic cost.</li>
+                        <li><strong>Skip connections:</strong> Cross-Attention here is critical — it prevents the decoder from blindly accepting encoder features that are not relevant to the requested domain translation. The condition (via cross-attention) actively selects what the decoder receives.</li>
+                        <li><strong>Latent space (bottleneck):</strong> Full Self-Attention is applied only here, where the spatial resolution is at its smallest. The computational cost is manageable, and global coherence at this level propagates through the entire decoder, shaping the output structure at the highest semantic level.</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Think of it as three specialized filters placed at three key checkpoints: one that keeps the feature maps internally consistent while denoising, one that decides which encoder context the decoder should trust, and one that ensures the final compressed representation is globally coherent before reconstruction begins.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: IMPLEMENTATION & KEY OPTIMIZATIONS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">3. Implementation & Key Optimizations</h2>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <p class="text-justify">
+                    Three design decisions drove the performance differences across experiment configurations: whether training pairs source and target images explicitly, how the condition enters the network, and whether guidance is applied at inference.
+                </p>
+
+                <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Dataset Strategy: Paired vs Unpaired Training</h4>
+
+                <p class="text-justify">
+                    Paired training presents explicit male-female image correspondences at each update step, giving the model a direct signal for what "correct" translation looks like. Unpaired training provides no explicit correspondence. The model learns the translation from population-level statistics across source and target domains. Paired training produces stronger attribute alignment but requires a dataset of matched pairs, which is harder to curate at scale.
+                </p>
+
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/DDPM_CelebA/cDDPM_ConcatCond_architecture.png" alt="Input Concatenation Conditioning Architecture" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Input concatenation baseline: the condition is appended as extra channels at the network input, limiting its influence to early layers only.</small></p>
+                </div>
+
+                <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Injection Method Comparison</h4>
+
+                <p class="text-justify">
+                    Two injection strategies were evaluated. <strong>Condition Encoding (FiLM)</strong> adds the modulated latent representation inside each ResNet block. <strong>Input Concatenation</strong> appends the condition image as additional channels at the network input. FiLM propagates the condition signal through all network depths. Concatenation limits influence to early processing stages.
+                </p>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Configuration</th>
+                            <th>Injection Method</th>
+                            <th>Data Pairing</th>
+                            <th>Conditioning Reach</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Baseline</strong></td>
+                            <td>Input Concatenation</td>
+                            <td>Unpaired</td>
+                            <td>Input layer only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FiLM (Unpaired)</strong></td>
+                            <td>Condition Encoding (FiLM)</td>
+                            <td>Unpaired</td>
+                            <td>All ResNet blocks</td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td><strong>FiLM + Paired + CFG</strong></td>
+                            <td>Condition Encoding (FiLM)</td>
+                            <td>Paired</td>
+                            <td>All ResNet blocks + guided inference</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Classifier-Free Guidance (CFG)</h4>
+
+                <p class="text-justify">
+                    Without Classifier-Free Guidance, the condition can over-constrain the denoising process, pulling outputs toward a mode that satisfies the condition but deviates from a natural image distribution. CFG addresses this by randomly dropping the condition during training with a probability of <strong>20%</strong>. The model learns to generate under both conditioned and unconditioned paths.
+                </p>
+
+                <div class="model-overview" style="border-left: 4px solid var(--primary);">
+                    <h5>CFG at Inference</h5>
+                    <p style="margin: 0.5rem 0;">
+                        At inference time, predictions from the conditioned and unconditioned passes are interpolated. This interpolation controls how strongly the condition steers the output. A high guidance weight prioritizes attribute transfer. A low weight prioritizes image naturalness. The 20% training dropout keeps both modes well-calibrated.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="model-overview" style="border-left: 4px solid var(--primary);">
+                    <h5>Training Configuration</h5>
+                    <div style="font-family: 'Courier New', monospace; font-size: 0.9rem; margin-top: 1rem; background: #f8f9fa; padding: 1rem; border-radius: 4px; line-height: 1.6;">
+Epochs (cDDPM):     <strong>54</strong>
+CFG Dropout:        <strong>20%</strong>
+Scheduler:          <strong>Linear</strong>
+Injection:          <strong>FiLM</strong>
+Loss Function:      <strong>Huber</strong>
+Eval Metric:        <strong>KID</strong>
+Tasks:              <strong>CelebA, Day2Night</strong>
+                    </div>
+                </div>
+
+                <div class="model-overview" style="margin-top: 1.5rem;">
+                    <h5>Training Pipeline</h5>
+                    <ol style="margin-top: 1rem; padding-left: 1.5rem; font-size: 0.95rem;">
+                        <li>Sample source image and condition image (paired or unpaired)</li>
+                        <li>Forward diffusion: add noise via linear scheduler across timesteps</li>
+                        <li>Drop condition with 20% probability (CFG training)</li>
+                        <li>Forward pass through U-Net with FiLM injection at each ResNet block</li>
+                        <li>Compute Huber loss against ground-truth noise</li>
+                        <li>Backward pass, update weights</li>
+                        <li>At inference: interpolate conditioned and unconditioned predictions via CFG</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: RESULTS & VISUALS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">4. Results & Visuals</h2>
+
+        <!-- 4.1 Facial Attribute Translation -->
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">4.1 Facial Attribute Translation (CelebA)</h3>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Training Epochs</div>
+                <div class="metric-value">54</div>
+                <div class="metric-unit">cDDPM on CelebA</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">CFG Dropout</div>
+                <div class="metric-value">20%</div>
+                <div class="metric-unit">condition dropout rate</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Quality Metric</div>
+                <div class="metric-value">KID</div>
+                <div class="metric-unit">Kernel Inception Distance</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Training Loss</div>
+                <div class="metric-value">Huber</div>
+                <div class="metric-unit">robust to noise outliers</div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    Generated outputs show successful transfer of gender-linked attributes including hair length, facial structure, and apparent makeup. Source identity is not consistently preserved. The conditioning signal transfers target-domain attributes but provides no explicit anchor for source-specific structure, which allows identity drift.
+                </p>
+                <p class="text-justify">
+                    Adding a face recognition loss would constrain structural drift directly. Without it, extending training is unlikely to resolve the issue since the model receives no gradient signal penalizing identity change. FiLM's multi-depth injection is the design choice that produced attribute transfer quality at the level shown here — input concatenation alone would not have reached it.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/DDPM_CelebA/Generations_LossCurve_Paired_Images.png" alt="Generated samples and loss curves for paired training" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Generated samples and training loss curve for the paired image configuration.</small></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4.2 Injection Method Comparison -->
+        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.2 Injection Method Comparison</h3>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/DDPM_CelebA/Generations_LossCurve_Unpaired_Images.png" alt="Generated samples and loss curves for unpaired training" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Generated samples and training loss curve for the unpaired image configuration.</small></p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    Multi-depth FiLM injection produces stronger attribute transfer than input concatenation alone. A condition injected only at the input loses influence over deep layers where high-level semantic attributes such as facial structure and expression are represented. FiLM's reach across all ResNet blocks closes that gap by modulating both local texture features and global semantic features simultaneously. The KID difference between configurations reflects this directly: translation quality scales with how deeply the condition penetrates the network.
+                </p>
+            </div>
+        </div>
+
+        <!-- 4.3 Day2Night Benchmark -->
+        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Day2Night Benchmark: cDDPM vs GAN</h3>
+
+        <p class="text-justify">
+            The cDDPM trained for 54 epochs was benchmarked against a standard GAN baseline on Day2Night landscape conversion. This comparison tests whether diffusion-based generation is competitive against the established adversarial approach on a structurally simpler domain shift.
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Training Paradigm</th>
+                    <th>Conditioning</th>
+                    <th>Task</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>cDDPM (54 epochs)</strong></td>
+                    <td>Diffusion, iterative denoising</td>
+                    <td>FiLM + CFG</td>
+                    <td>Day2Night</td>
+                </tr>
+                <tr>
+                    <td><strong>GAN (Baseline)</strong></td>
+                    <td>Adversarial, generator-discriminator</td>
+                    <td>Standard conditional</td>
+                    <td>Day2Night</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="text-justify" style="margin-top: 1rem;">
+            Diffusion models produce high-fidelity outputs but require significantly more compute at inference time than GANs. The GAN baseline reaches stable coherence faster on low-complexity domain shifts where the target distribution is narrow and well-defined, which makes Day2Night a competitive benchmark for it. The 54-epoch cDDPM result establishes how much training budget this architecture requires to reach comparable coherence. On more complex tasks where the target domain is semantically richer, the diffusion model's iterative refinement advantage over adversarial training would be more pronounced.
+        </p>
+
+        <!-- 4.4 Personal Photo Test -->
+        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.4 Stress Test: Personal Portrait</h3>
+
+        <div class="row mt-4">
+            <div class="col-lg-5">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/DDPM_CelebA/ProfilePicGeneration.png" alt="Personal photo: condition (original portrait) and generated output" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Left: condition (source portrait). Right: the model's generated output.</small></p>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <p class="text-justify">
+                    The model was tested on a personal portrait. The objective was simple: take a real photo of the author and translate it into a female version that preserves the original features. What it produced instead could generously be described as abstract.
+                </p>
+                <p class="text-justify">
+                    The output keeps a rough facial geometry. Everything else collapses: skin tone drifts, expression dissolves, the background merges with the foreground, and the overall result looks less like a translated portrait and more like a late-night encounter in a haunted house. The model did not turn the author into a woman. It turned him into a demon.
+                </p>
+                <div class="model-overview" style="border-left: 4px solid #ff6b6b; margin-top: 1rem;">
+                    <h6 style="color: #ff6b6b;">What this actually demonstrates</h6>
+                    <p style="margin: 0.5rem 0; font-size: 0.95rem;">
+                        This result is not an edge case. It is a precise illustration of the core limitation: the condition injection mechanism steers the domain but provides no structural anchor for source identity. The model knows what female faces look like. It does not know how to make <em>this specific face</em> look female. That gap is exactly what refined spatial conditioning and an identity loss are designed to close in future work.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: CONCLUSION & FUTURE PERSPECTIVES -->
+    <section class="mb-5">
+        <h2 class="section-title">5. Conclusion & Future Perspectives</h2>
+
+        <div class="conclusion-box">
+            <h3>Project Summary</h3>
+
+            <p class="text-justify">
+                This project demonstrates a functional cDDPM pipeline for image-to-image translation using FiLM conditioning, Classifier-Free Guidance, and paired training. The model transfers gender-linked facial attributes on CelebA and produces directional domain shifts on Day2Night. The conditioning signal was not fully optimized in this iteration: guidance from the condition image sometimes interferes with the denoising process rather than steering it cleanly.
+            </p>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Outcomes</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>FiLM conditioning across all ResNet blocks outperforms input concatenation for attribute transfer tasks</li>
+                <li>CFG at 20% dropout enables stable inference guidance without destabilizing training</li>
+                <li>Paired training improves attribute correspondence over unpaired population-level sampling</li>
+                <li>Day2Night benchmark provides a concrete reference comparison against standard GAN performance</li>
+                <li>Identity preservation across translation is the primary open problem in this configuration</li>
+            </ul>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li><strong>Spatial Placeholder Conditioning:</strong> Reserve specific spatial areas in the feature maps to anchor semantic attributes, improving condition fidelity without over-constraining the denoising path</li>
+                <li><strong>Identity Loss:</strong> Add a face recognition loss term to penalize structural drift from the source identity during translation</li>
+                <li><strong>Deeper Condition Optimization:</strong> Extend training beyond 54 epochs with the conditioning scheme refined to reduce interference with the denoising trajectory</li>
+                <li><strong>Attention-Based Injection:</strong> Replace or supplement FiLM with cross-attention over the condition latent for finer spatial control over where attributes are transferred</li>
+                <li><strong>Classifier Guidance:</strong> Combine CFG with a domain attribute classifier to apply semantic gradients at inference time</li>
+            </ul>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <!-- add image: example of failure or visual limitation showing where condition was not well followed -->
+                <div class="image-placeholder">
+                    Conditioning Failure Example<br>
+                    <small>Output where condition signal was not followed</small>
+                </div>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Example where the condition failed to redirect the denoising trajectory toward the target domain.</small></p>
+            </div>
+            <div class="col-lg-6">
+                <!-- add image: sketch of the spatial placeholder concept for future conditioning work -->
+                <div class="image-placeholder">
+                    Spatial Placeholder Concept<br>
+                    <small>Proposed future conditioning approach</small>
+                </div>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Future direction: placeholder-based spatial conditioning that reserves feature map areas for targeted semantic attribute injection.</small></p>
+            </div>
+        </div>
+
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Resources & Links</h3>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: var(--light); border-radius: 8px;">
+            <h5 style="color: var(--dark); margin-bottom: 1rem;">Associated Documents</h5>
+            <ul style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Primary Dataset:</strong> CelebA (Large-scale CelebFaces Attributes Dataset) — facial attribute annotations across 200k+ images</li>
+                <li><strong>Secondary Dataset:</strong> Day2Night landscape pairs for generalization benchmarking</li>
+                <li><strong>Source Code:</strong> Training and evaluation scripts (link to be added)</li>
+            </ul>
+        </div>
+    </section>
+
+</div>
+
+<!-- Modal for image expansion -->
+<div id="imageModal" class="modal">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+    function openImageModal(imageSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imageSrc;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('imageModal');
+        if (event.target === modal) {
+            closeImageModal();
+        }
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+
+    document.querySelectorAll('.row-image img').forEach(img => {
+        img.style.cursor = 'pointer';
+        img.onclick = function() {
+            openImageModal(this.src);
+        };
+    });
+</script>
+
+</body>
+</html>
