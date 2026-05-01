@@ -337,7 +337,7 @@
 
                 <div class="row-image" style="margin-top: 2rem; text-align: center;">
                     <!-- IMAGE SUGGESTION: sample handwritten word "neuron" from Figure 1 of the project definition PDF — trajectory rendered as scattered 2D dots tracing the cursive stroke -->
-                    <img src="img/GRO722/Sample_handwriting_GRO722.png" alt="Sample Handwritten Word — 2D Coordinate Trajectory" style="max-width: 100%;">
+                    <img src="img/GRO722/dataset sample.png" alt="Sample Handwritten Word — 2D Coordinate Trajectory" style="max-width: 100%;">
                     <p class="mt-2 text-muted"><small>Sample Dataset Entry — Handwritten word "neuron" as 2D coordinate trajectory</small></p>
                 </div>
             </div>
@@ -622,20 +622,28 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
             </div>
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
-                    <!-- IMAGE SUGGESTION: training and validation loss curves (Figure 2 from technical report, page 9) — Train (blue) vs Val (orange), x-axis epochs 0–300, y-axis loss starting at ~2.5, rapid drop by epoch 50, stable plateau -->
                     <img src="img/GRO722/train_loss_curves.png" alt="Training and Validation Loss — 300 Epochs" style="max-width: 100%;">
                     <p class="mt-2 text-muted"><small>Training & Validation Loss Curves — 300 Epochs</small></p>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-4">
-            <div class="col-lg-12">
-                <div class="row-image">
-                    <img src="img/GRO722/Distance curve.png" alt="Edit Distance Overview — Training and Validation" style="width: 100%;">
+        <div class="row mt-4 align-items-center">
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/Distance curve.png" alt="Edit Distance Curves — Training and Validation" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Edit Distance Curves — 300 Epochs</small></p>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    The Levenshtein edit distance counts the minimum number of single-character operations — insertions, deletions, or substitutions — needed to transform the predicted sequence into the ground-truth word. A score of 0 is a perfect prediction; a score of 1 means exactly one character differs.
+                </p>
+                <div class="model-overview" style="text-align: center; padding: 1rem 1.5rem;">
+                    $$d(s_1, s_2) = \begin{cases} |s_1| & \text{if } |s_2| = 0 \\ |s_2| & \text{if } |s_1| = 0 \\ d(s_1[1:], s_2[1:]) & \text{if } s_1[0] = s_2[0] \\ 1 + \min \begin{pmatrix} d(s_1[1:], s_2) \\ d(s_1, s_2[1:]) \\ d(s_1[1:], s_2[1:]) \end{pmatrix} & \text{otherwise} \end{cases}$$
                 </div>
                 <p class="text-justify">
-                    The edit distance metric (Levenshtein) complements the loss curve by measuring actual character-level prediction accuracy. The rapid drop from ~4.0 to below 1.0 in the first 50 epochs demonstrates that the model quickly learns to align sequences. The final plateau at ~0.4 for validation indicates that the majority of predictions are either fully correct or differ from the target by only a single character.
+                    The rapid drop from ~4.0 to below 1.0 in the first 50 epochs shows the model quickly learns to align sequences. The final plateau at ~0.4 for validation indicates the majority of predictions are either fully correct or off by a single character.
                 </p>
             </div>
         </div>
@@ -668,28 +676,6 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
             </div>
         </div>
 
-        <div class="row mt-4">
-            <div class="col-lg-12">
-                <!-- IMAGE SUGGESTION: edit distance curves detail (Figure 3 from technical report, page 10) showing full 300-epoch view with x-axis = Epoch, y-axis = Edit Distance, Train blue plateau ~0.1, Val orange plateau ~0.4, initial value ~4.0 -->
-                <div class="image-placeholder">
-                    Edit Distance Curves (Train vs Val)<br>
-                    <small>(to add: edit_distance_curves.png)</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <div class="col-lg-6">
-                <div class="row-image" style="text-align: center;">
-                    <img src="img/GRO722/attention_weights_example.png" alt="Attention Weights on Trajectory — word 'islet'" style="max-width: 100%;">
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <p class="text-justify">
-                    The attention visualization for the test word <strong>"islet"</strong> confirms the mechanism is learning meaningful focus points. For each letter prediction, the attention weights concentrate on the region of the trajectory where that letter's stroke begins — the point where direction, velocity, or curvature changes most distinctively. The prediction of "s" focuses on the curved leftward stroke; "l" triggers attention on the upward vertical rise. This demonstrates the model has internalized the geometric structure of cursive letter transitions, rather than memorizing arbitrary patterns.
-                </p>
-            </div>
-        </div>
 
         <!-- Confusion Matrix Results -->
         <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Confusion Matrix & Translation Examples</h3>
@@ -734,17 +720,29 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
             </div>
         </div>
 
-        <div class="row mt-4">
-            <div class="col-lg-12">
-                <div class="row-image">
-                    <!-- IMAGE SUGGESTION: 5-panel translation example visualization (Figure 5 from technical report, pages 13–14) — one panel per letter of the word "islet", showing Target: islet / Prediction: islet header, and in each panel the full handwritten trajectory with darker dots indicating where the attention focused for that letter's prediction -->
-                    <img src="img/GRO722/translation_example_islet.png" alt="Translation Example with Attention Weights — Word 'islet'" style="width: 100%;">
+        <div class="row mt-4 g-3">
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/islet.png" alt="Attention prediction — islet" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Target: <strong>islet</strong> &rarr; Predicted: <strong>islet</strong></small></p>
                 </div>
-                <p class="text-justify">
-                    The test example for the word <strong>"islet"</strong> demonstrates a perfect prediction. Each panel corresponds to one predicted letter, and the darker dots indicate the trajectory regions that attracted the highest attention weights. The model correctly attends to the geometrically distinctive transition at the start of each letter stroke: the "s" prediction focuses on the leftward curve, while "l" triggers attention on the steep vertical ascent. This qualitative result confirms that the attention mechanism has learned to exploit meaningful geometric structure in the trajectory, rather than relying on positional shortcuts or spurious correlations.
-                </p>
+            </div>
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/Lela.png" alt="Attention prediction — lela" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Target: <strong>lela</strong> &rarr; Predicted: <strong>lela</strong></small></p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/lynn.png" alt="Attention prediction — lynn" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Target: <strong>lynn</strong> &rarr; Predicted: <strong>lynn</strong></small></p>
+                </div>
             </div>
         </div>
+        <p class="text-justify mt-3">
+            Each panel shows the model predicting one letter at a time, with darker dots marking the trajectory regions that received the highest attention weights. Across all three words, the model correctly focuses on the geometrically distinctive transition at the start of each letter stroke — confirming that attention has learned meaningful spatial structure rather than positional shortcuts.
+        </p>
     </section>
 
     <!-- SECTION 5: CONCLUSION & FUTURE PERSPECTIVES -->
@@ -846,6 +844,16 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
         };
     });
 </script>
+
+<script>
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        }
+    };
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </body>
 </html>
