@@ -740,9 +740,56 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
                 </div>
             </div>
         </div>
-        <p class="text-justify mt-3">
-            Each panel shows the model predicting one letter at a time, with darker dots marking the trajectory regions that received the highest attention weights. Across all three words, the model correctly focuses on the geometrically distinctive transition at the start of each letter stroke — confirming that attention has learned meaningful spatial structure rather than positional shortcuts.
-        </p>
+        <div class="model-overview" style="margin-top: 1.5rem; border-left: 4px solid var(--primary);">
+            <h5>Reading the attention maps</h5>
+            <p style="margin: 0.5rem 0;">
+                The <strong>black cluster of dots</strong> in each panel is the attention mechanism at work. It marks the exact region of the handwriting trajectory that the model weighted most heavily when predicting that letter. The rest of the trajectory fades to light grey — those points were effectively ignored for this particular prediction step.
+            </p>
+            <p style="margin: 0.5rem 0;">
+                Notice that the black cluster consistently lands <strong>between letters</strong>, not at the center of the stroke. This is intentional and correct. In continuous cursive writing, the most information-rich moment is the transition point where one letter ends and the next begins — that is where direction, velocity, and curvature all change simultaneously. The model learned, without explicit supervision, that anchoring attention at those junctions is the most reliable cue for deciding which character just completed. A model without attention would have to compress this entire signal into a single fixed vector.
+            </p>
+        </div>
+
+        <h4 style="color: var(--primary); margin-top: 2.5rem; margin-bottom: 1rem;">More Prediction Samples</h4>
+
+        <div class="row mt-3 g-3">
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/samples/sample_001_tones.png" alt="Attention prediction — tones" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>tones</small></p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/samples/sample_002_bede.png" alt="Attention prediction — bede" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>bede</small></p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/samples/sample_003_mandy.png" alt="Attention prediction — mandy" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>mandy</small></p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/samples/sample_006_glass.png" alt="Attention prediction — glass" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>glass</small></p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/samples/sample_007_melt.png" alt="Attention prediction — melt" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>melt</small></p>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="row-image" style="text-align: center;">
+                    <img src="img/GRO722/samples/sample_009_surf.png" alt="Attention prediction — surf" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>surf</small></p>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- SECTION 5: CONCLUSION & FUTURE PERSPECTIVES -->
