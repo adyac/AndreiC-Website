@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>RNN Project - Handwriting Recognition with Sequence-to-Sequence Models</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        .text-justify {
+            text-align: justify;
+        }
+
+        .header-strip {
+            margin-bottom: 6rem;
+            background: url(img/pngtreehexbg.png) right no-repeat;
+            background-size: cover;
+            height: 67vh;
+            width: 100%;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            color: black;
+        }
+
+        .header-strip h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .header-strip p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.5rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(79, 125, 250, 0.2);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-unit {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            min-height: 300px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 1rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+        }
+
+        .model-overview {
+            background: var(--light);
+            border-left: 4px solid var(--primary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .model-overview h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #333;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .comparison-table tr:hover {
+            background: var(--light);
+        }
+
+        .badge-tech {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .github-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #333;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .github-link:hover {
+            color: white;
+            background-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 125, 250, 0.3);
+        }
+
+        .row-image {
+            margin: 1.5rem 0;
+        }
+
+        .row-image img {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .row-image img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(79, 125, 250, 0.2);
+        }
+
+        .conclusion-box {
+            background: linear-gradient(135deg, var(--light) 0%, #fff 100%);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .conclusion-box h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .architecture-diagram {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            margin: 1.5rem 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.95);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Project Header -->
+<div class="header-strip">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1>Handwriting Recognition with Recurrent Neural Networks</h1>
+                <p><strong>Sequence-to-sequence translation of 2D handwriting trajectories | GRO722</strong></p>
+                <p style="margin-top: 0.5rem; opacity: 0.9;">University of Sherbrooke | March 26, 2025</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container my-5">
+
+    <!-- SECTION 1: CONTEXT & OBJECTIVE -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">1. Context & Objective</h2>
+
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <p class="text-justify lead">
+                    This project is a <strong>proof of concept (PoC)</strong> for an augmented reality company developing an immersive interface where users can write commands and text using only hand gestures. The objective is to determine the feasibility of translating inertial sensor data from a smartwatch into readable letter sequences using deep learning.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Technical Goal</h4>
+                <p class="text-justify">
+                    Develop a sequence-to-sequence (Seq2Seq) system capable of translating 2D coordinate trajectories of handwritten words into the correct sequences of letters. Input data comes from preprocessed IMU (inertial measurement unit) data representing continuous one-stroke handwriting traces, where each word is a sequence of real 2D coordinates sampled at regular time intervals (x ∈ ℝ<sup>2×T</sup>).
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Project Constraints</h4>
+                <ul class="text-justify">
+                    <li><strong>Resource Limitations:</strong> The model must operate on a micro-computer with limited memory and computing power</li>
+                    <li><strong>Parameter Limit:</strong> Maximum 10,000 trainable parameters</li>
+                    <li><strong>Framework:</strong> PyTorch (already in use across other company projects)</li>
+                    <li><strong>Evaluation Metrics:</strong> Levenshtein edit distance and a 26-letter confusion matrix</li>
+                </ul>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Dataset Characteristics</h4>
+                <ul class="text-justify">
+                    <li><strong>Input Format:</strong> 2D coordinate sequences (x, y) sampled at regular time intervals, up to several hundred elements per word</li>
+                    <li><strong>Word Length:</strong> English words of 1 to 5 lowercase letters</li>
+                    <li><strong>Vocabulary:</strong> 26 lowercase letters of the alphabet (no accents or variations)</li>
+                    <li><strong>Special Tokens:</strong> &lt;pad&gt; (padding), &lt;sos&gt; (start of sequence), &lt;eos&gt; (end of sequence)</li>
+                    <li><strong>Data Split:</strong> 70% training / 20% validation / 10% test</li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="model-overview">
+                    <h4>Technology Stack</h4>
+                    <div style="margin-top: 1rem;">
+                        <div class="badge-tech">Python 3.x</div>
+                        <div class="badge-tech">PyTorch</div>
+                        <div class="badge-tech">NumPy</div>
+                        <div class="badge-tech">Matplotlib</div>
+                    </div>
+                </div>
+
+                <div class="row-image" style="margin-top: 2rem; text-align: center;">
+                    <!-- IMAGE SUGGESTION: sample handwritten word "neuron" from Figure 1 of the project definition PDF — trajectory rendered as scattered 2D dots tracing the cursive stroke -->
+                    <img src="img/GRO722/Sample_handwriting_GRO722.png" alt="Sample Handwritten Word — 2D Coordinate Trajectory" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Sample Dataset Entry — Handwritten word "neuron" as 2D coordinate trajectory</small></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: ARCHITECTURE & MODELS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">2. Architecture & RNN Model</h2>
+
+        <!-- Encoder -->
+        <div class="row mb-4">
+            <div class="col-lg-7">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.1 Bidirectional LSTM Encoder</h3>
+
+                <p class="text-justify">
+                    The encoder processes the full handwriting trajectory and compresses it into rich contextual representations. A <strong>bidirectional LSTM</strong> reads the 2D coordinate sequence in both forward and backward directions, allowing it to capture shape symmetry and contextual detail that a unidirectional network would miss.
+                </p>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Think of reading a handwritten word both left-to-right and right-to-left simultaneously — the model sees the full context of the trajectory before committing to an encoding. Because the full sequence is known upfront, using both directions is both valid and beneficial.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Design Choices</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Architecture:</strong> Bidirectional LSTM (input=2, hidden=18, layers=1)</li>
+                        <li><strong>Input:</strong> 2D coordinates (x, y) normalized to [0, 1]</li>
+                        <li><strong>LSTM over Elman:</strong> Gated memory cells mitigate vanishing gradient on long sequences</li>
+                        <li><strong>LSTM over GRU:</strong> GRU lacks a separate input memory cell — less effective on complex trajectories</li>
+                        <li><strong>Encoder Parameters:</strong> 3,024</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    The bidirectional design creates richer trajectory representations: the forward pass captures the natural writing flow while the backward pass captures shape continuations and symmetry, such as mirrored strokes in letters like "o" or "s".
+                </p>
+            </div>
+
+            <div class="col-lg-5">
+                <!-- IMAGE SUGGESTION: bidirectional LSTM encoder architecture block showing input=2, hidden_dim=18, bidirectional=True, output dimension annotation R^3024 — extracted from Figure 1 block diagram (technical report, page 6) -->
+                <div class="image-placeholder">
+                    Bidirectional LSTM Encoder Architecture<br>
+                    <small>Detailed Diagram (to add)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decoder -->
+        <div class="row mb-4">
+            <div class="col-lg-7 order-lg-2">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 Unidirectional LSTM Decoder with Embedding</h3>
+
+                <p class="text-justify">
+                    The decoder generates the output word <strong>letter by letter</strong>, left to right, one step at a time. A unidirectional LSTM is used because the decoder must predict each character without knowledge of future letters — a bidirectional decoder would be conceptually invalid here, as it would require access to letters that do not yet exist at prediction time.
+                </p>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    At each decoding step, the decoder receives the <strong>embedding vector</strong> of the previously predicted letter. The embedding layer maps each character — including special tokens &lt;sos&gt;, &lt;eos&gt;, &lt;pad&gt; — into a dense 18-dimensional vector space, helping the model generalize across the 29-symbol vocabulary.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Design Choices</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Architecture:</strong> Unidirectional LSTM (input=18, hidden=18, layers=1)</li>
+                        <li><strong>Embedding:</strong> nn.Embedding(dict_size=29, hidden=18) — 522 parameters</li>
+                        <li><strong>Special Tokens:</strong> &lt;sos&gt; starts decoding, &lt;eos&gt; signals end, &lt;pad&gt; fills batches</li>
+                        <li><strong>Decoder Parameters:</strong> 2,664</li>
+                        <li><strong>No Teacher Forcing:</strong> Predicted output used as next-step input — avoids error compounding</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Teacher forcing was deliberately excluded: feeding the model's own predictions as next-step inputs — rather than ground-truth letters — prevents a failure mode where errors compound and cause repeated letter predictions throughout the output sequence.
+                </p>
+            </div>
+
+            <div class="col-lg-5 order-lg-1">
+                <!-- IMAGE SUGGESTION: unidirectional LSTM decoder block diagram showing embedding input, LSTM cell, attention context concatenation, and output FC layer — from Figure 1 block diagram (technical report, page 6) -->
+                <div class="image-placeholder">
+                    Unidirectional LSTM Decoder Architecture<br>
+                    <small>Detailed Diagram (to add)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attention Mechanism -->
+        <div class="row mb-4">
+            <div class="col-lg-7">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.3 Attention Mechanism & Full Seq2Seq Model</h3>
+
+                <p class="text-justify">
+                    The attention mechanism is the core innovation of the model, eliminating the encoder-decoder bottleneck by allowing the decoder to <strong>selectively focus on specific regions of the handwriting trajectory</strong> at each prediction step. For example, the model concentrates on tall vertical strokes when predicting "l" and on loops when predicting "e".
+                </p>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    At each decoder step: (1) the decoder's hidden state is projected to a query vector via <code>hidden2query</code>; (2) a dot product with all encoder outputs produces raw attention scores; (3) softmax normalization yields attention weights; (4) a weighted sum of encoder outputs forms the context vector; (5) context and decoder output are concatenated and fused via <code>attention_combine</code> before the final character prediction.
+                </p>
+
+                <div class="model-overview">
+                    <h5>Design Choices</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Attention Type:</strong> Dot-product (query from decoder hidden state vs. encoder outputs)</li>
+                        <li><strong>hidden2query:</strong> Linear(18 → 36) — 722 parameters</li>
+                        <li><strong>attention_combine:</strong> Linear(54 → 18) — 1,044 parameters</li>
+                        <li><strong>Output FC:</strong> Linear(18 → 29) — 551 parameters</li>
+                        <li><strong>Total Parameters:</strong> 9,841 (< 10,000 limit)</li>
+                    </ul>
+                </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Attention replaces the single fixed-length context vector of classic Seq2Seq with a dynamic one recomputed at every decoding step. This is critical for long handwriting sequences, where a single compressed vector would inevitably lose the fine spatial detail needed to distinguish similar-looking letters.
+                </p>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="row-image" style="text-align: center;">
+                    <!-- IMAGE SUGGESTION: full Seq2Seq block diagram (Figure 1 from technical report, page 6) showing encoder → embedding → decoder → attention → output pipeline with parameter count annotations per layer -->
+                    <img src="img/GRO722/architecture_seq2seq_attention.png" alt="Full Seq2Seq Architecture with Attention" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Seq2Seq Architecture with Attention — Detailed Block Diagram</small></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: IMPLEMENTATION -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">3. Implementation & Key Decisions</h2>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <p class="text-justify">
+                    Getting from a random edit distance of ~4 down to below 0.5 on the validation set required careful choices at every step: data preprocessing, architecture selection, and training strategy. Here is what each piece contributed.
+                </p>
+
+                <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Data Pipeline & Preprocessing</h4>
+
+                <h5 style="margin-top: 1.5rem;">Dataset Class</h5>
+                <p class="text-justify">
+                    Custom <code>HandwrittenWords</code> Dataset class loads handwritten word data from binary pickle files (<code>data_trainval.p</code>, <code>data_test.p</code>). Split: <strong>70% training / 20% validation / 10% test</strong>. Preprocessing applies coordinate normalization between 0 and 1, padding of both coordinate sequences and target letter sequences to uniform batch length, and insertion of special tokens (&lt;sos&gt;, &lt;eos&gt;, &lt;pad&gt;). Bidirectional one-hot conversion is handled via Python dictionaries with a vocabulary of 29 symbols (26 letters + 3 special tokens).
+                </p>
+
+                <h5 style="margin-top: 1.5rem;">Key Architecture Decisions</h5>
+                <p class="text-justify">
+                    Every component of the model required explicit justification within the 10,000-parameter constraint:
+                </p>
+
+                <div class="model-overview" style="margin-top: 1rem;">
+                    <h6 style="color: var(--primary);">Architectural Choices Made</h6>
+                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li><strong>LSTM over Elman:</strong> Memory cells and gates handle long sequences without vanishing gradients</li>
+                        <li><strong>LSTM over GRU:</strong> GRU lacks a separate input memory cell, reducing capacity on complex trajectory patterns</li>
+                        <li><strong>Bidirectional Encoder:</strong> Full trajectory is known before decoding — observing both directions yields richer representations</li>
+                        <li><strong>Unidirectional Decoder:</strong> Letters generated left-to-right; future letters unknown at decode time — bidirectional would be incoherent</li>
+                        <li><strong>No Teacher Forcing:</strong> Prevents error propagation; predicted outputs used as next step inputs throughout training</li>
+                    </ul>
+                </div>
+
+                <div class="model-overview" style="border-left: 4px solid #ff6b6b; margin-top: 1rem;">
+                    <h6 style="color: #ff6b6b;">Critical Constraint: Hidden Dimension Trade-off</h6>
+                    <p style="margin: 0.5rem 0;">
+                        Hidden dimension set to <strong>18</strong> — the maximum value keeping total parameters under 10,000. The final count is 9,841 (only 159 parameters from the hard limit).
+                    </p>
+                    <p style="margin: 0.5rem 0; font-size: 0.95rem;">
+                        <strong>Root Cause:</strong> Every layer in the model (encoder, embedding, decoder, attention, FC) contributes to the budget. The hidden dimension of 18 was the maximum achievable value that satisfied all constraints simultaneously.
+                    </p>
+                    <p style="margin: 0.5rem 0; font-size: 0.95rem;">
+                        <strong>Learning:</strong> A small, well-designed model can be fully capable — architecture quality matters far more than raw parameter count.
+                    </p>
+                </div>
+
+                <h5 style="margin-top: 1.5rem;">Training Progression</h5>
+
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Training Phase</th>
+                            <th>Train Edit Dist.</th>
+                            <th>Val Edit Dist.</th>
+                            <th>Epoch Range</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Initial (untrained)</strong></td>
+                            <td>~4.0</td>
+                            <td>~4.0</td>
+                            <td>0</td>
+                            <td>Random predictions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rapid learning phase</strong></td>
+                            <td>&lt;1.0</td>
+                            <td>&lt;1.0</td>
+                            <td>0–50</td>
+                            <td>Fast alignment discovered</td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td><strong>Final (300 epochs)</strong></td>
+                            <td>~0.1</td>
+                            <td>~0.4</td>
+                            <td>50–300</td>
+                            <td>Stable — robust generalization</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="model-overview" style="border-left: 4px solid var(--primary);">
+                    <h5 style="color: var(--primary);">Final Hyperparameters</h5>
+                    <div style="font-family: 'Courier New', monospace; font-size: 0.9rem; margin-top: 1rem; background: #f8f9fa; padding: 1rem; border-radius: 4px; line-height: 1.6;">
+Learning Rate:        <strong>0.01</strong>
+Batch Size:          <strong>64</strong>
+Epochs:              <strong>300</strong>
+Hidden Dims:         <strong>18</strong>
+RNN Layers:          <strong>1</strong>
+Encoder:             <strong>Bi-LSTM</strong>
+Decoder:             <strong>LSTM</strong>
+Teacher Forcing:     <strong>None</strong>
+Data Split:          <strong>70/20/10</strong>
+Loss Function:       <strong>CrossEntropyLoss</strong>
+                    </div>
+                </div>
+
+                <div class="model-overview" style="margin-top: 1.5rem;">
+                    <h5 style="color: var(--primary);">Training Pipeline</h5>
+                    <ol style="margin-top: 1rem; padding-left: 1.5rem; font-size: 0.95rem;">
+                        <li>Load data from pickle files</li>
+                        <li>Normalize coordinates to [0, 1]</li>
+                        <li>Pad sequences + add special tokens</li>
+                        <li>Initialize Seq2Seq model + Adam optimizer</li>
+                        <li>For each epoch:
+                            <ul style="margin-top: 0.5rem;">
+                                <li>Encode full trajectory</li>
+                                <li>Decode letter by letter with attention</li>
+                                <li>Compute cross-entropy loss</li>
+                                <li>Validate edit distance</li>
+                            </ul>
+                        </li>
+                        <li>Save best weights (based on val loss)</li>
+                        <li>Final test: confusion matrix + attention plots</li>
+                    </ol>
+                </div>
+
+                <div class="model-overview" style="margin-top: 1.5rem;">
+                    <h5 style="color: var(--primary);">Lessons Learned</h5>
+                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>Coordinate normalization essential for stable training</li>
+                        <li>Attention dramatically outperforms plain Seq2Seq</li>
+                        <li>Bidirectional encoder yields richer representations</li>
+                        <li>Teacher forcing risks repeated letter predictions — avoid it</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: RESULTS & VISUALS -->
+    <section class="mb-5 pb-5 border-bottom">
+        <h2 class="section-title">4. Results & Visuals</h2>
+
+        <!-- Loss Results -->
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">4.1 Training & Validation Loss</h3>
+
+        <p class="text-justify">A final training loss of ~0.05 after 300 epochs, with no upward divergence in validation loss, shows the model is learning genuine representations without overfitting — all within fewer than 10,000 parameters.</p>
+
+        <div class="metrics-grid">
+            <div class="metric-card" style="border: 2px solid var(--primary); background: #f0f4ff;">
+                <div class="metric-label">Final Train Loss</div>
+                <div class="metric-value">~0.05</div>
+                <div class="metric-unit">CrossEntropy — stable convergence</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Val Loss (plateau)</div>
+                <div class="metric-value">[PLACEHOLDER]</div>
+                <div class="metric-unit">stabilized after epoch 50</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Total Parameters</div>
+                <div class="metric-value">9,841</div>
+                <div class="metric-unit">under 10,000 limit</div>
+            </div>
+            <div class="metric-card" style="border: 2px solid #28a745; background: #f0fff4;">
+                <div class="metric-label">Epochs Trained</div>
+                <div class="metric-value">300</div>
+                <div class="metric-unit">no divergence observed</div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    The loss curve shows a steep decline in the first 50 epochs for both training and validation sets, illustrating a fast initial learning phase where the model discovers relevant representations between trajectories and target letters. From epoch 50 onward, the training loss decreases more gradually, reaching a very low value around <strong>0.05</strong>. The validation loss stabilizes above the training loss — a normal and expected behavior — with no significant upward trend that would indicate performance degradation. Fluctuations in the validation curve are explained by the variability in word length and handwriting style across samples.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <!-- IMAGE SUGGESTION: training and validation loss curves (Figure 2 from technical report, page 9) — Train (blue) vs Val (orange), x-axis epochs 0–300, y-axis loss starting at ~2.5, rapid drop by epoch 50, stable plateau -->
+                    <img src="img/GRO722/train_loss_curves.png" alt="Training and Validation Loss — 300 Epochs" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Training & Validation Loss Curves — 300 Epochs</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="row-image">
+                    <!-- IMAGE SUGGESTION: edit distance curves overview (Figure 3 from technical report, page 10) — Train (blue) vs Val (orange) Levenshtein distance, starting at ~4.0, dropping to Train ~0.1 and Val ~0.4 over 300 epochs -->
+                    <img src="img/GRO722/edit_distance_overview.png" alt="Edit Distance Overview — Training and Validation" style="width: 100%;">
+                </div>
+                <p class="text-justify">
+                    The edit distance metric (Levenshtein) complements the loss curve by measuring actual character-level prediction accuracy. The rapid drop from ~4.0 to below 1.0 in the first 50 epochs demonstrates that the model quickly learns to align sequences. The final plateau at ~0.4 for validation indicates that the majority of predictions are either fully correct or differ from the target by only a single character.
+                </p>
+            </div>
+        </div>
+
+        <!-- Edit Distance Results -->
+        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.2 Edit Distance (Levenshtein)</h3>
+
+        <p class="text-justify">A validation edit distance below 0.5 means the majority of predicted words are either fully correct or differ from the target by at most one character insertion, deletion, or substitution — achieved within the strict 10,000-parameter constraint.</p>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Val Edit Distance (final)</div>
+                <div class="metric-value">~0.4</div>
+                <div class="metric-unit">average over validation set</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Train Edit Distance (final)</div>
+                <div class="metric-value">~0.1</div>
+                <div class="metric-unit">plateau after epoch 50</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Initial Edit Distance</div>
+                <div class="metric-value">~4.0</div>
+                <div class="metric-unit">before any training</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Epochs to &lt;1.0</div>
+                <div class="metric-value">~50</div>
+                <div class="metric-unit">rapid early convergence</div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    The edit distance curve mirrors the loss curve: a dramatic drop from approximately <strong>4.0 to below 1.0</strong> within the first 50 epochs shows the model rapidly learns to align predicted and target sequences, minimizing character insertions, deletions, and substitutions. After epoch 50, training edit distance continues declining toward ~<strong>0.1</strong>, while validation stabilizes around ~<strong>0.4</strong>. This gap between training and validation is consistent with a well-generalized but not overfit model, and residual oscillations are attributable to the natural difficulty of frequently confused letters such as "e" and "a".
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <!-- IMAGE SUGGESTION: edit distance curves detail (Figure 3 from technical report, page 10) showing full 300-epoch view with x-axis = Epoch, y-axis = Edit Distance, Train blue plateau ~0.1, Val orange plateau ~0.4, initial value ~4.0 -->
+                <div class="image-placeholder">
+                    Edit Distance Curves (Train vs Val)<br>
+                    <small>(to add: edit_distance_curves.png)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <!-- IMAGE SUGGESTION: attention weight visualization (Figure 5 from technical report, page 13) — 5 panels for word "islet", each showing the handwritten trajectory with darker dots on the region the attention module focused on for that letter -->
+                <div class="image-placeholder">
+                    Attention Weights on Trajectory (word: "islet")<br>
+                    <small>(to add: attention_weights_example.png)</small>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    The attention visualization for the test word <strong>"islet"</strong> confirms the mechanism is learning meaningful focus points. For each letter prediction, the attention weights concentrate on the region of the trajectory where that letter's stroke begins — the point where direction, velocity, or curvature changes most distinctively. The prediction of "s" focuses on the curved leftward stroke; "l" triggers attention on the upward vertical rise. This demonstrates the model has internalized the geometric structure of cursive letter transitions, rather than memorizing arbitrary patterns.
+                </p>
+            </div>
+        </div>
+
+        <!-- Confusion Matrix Results -->
+        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Confusion Matrix & Translation Examples</h3>
+
+        <p class="text-justify">A well-populated diagonal in the 26-letter confusion matrix confirms that the model correctly identifies the vast majority of characters. The test example for "islet" shows a perfectly accurate prediction with interpretable attention weights.</p>
+
+        <div class="metrics-grid">
+            <div class="metric-card" style="border: 2px solid var(--primary); background: #f0f4ff;">
+                <div class="metric-label">Diagonal Dominance</div>
+                <div class="metric-value">Strong</div>
+                <div class="metric-unit">26-letter test matrix</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Best-Predicted Letters</div>
+                <div class="metric-value">l, e, a, n, i, s</div>
+                <div class="metric-unit">most frequent in dataset</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Common Confusions</div>
+                <div class="metric-value">u/v &nbsp; m/n</div>
+                <div class="metric-unit">visually similar in cursive</div>
+            </div>
+            <div class="metric-card" style="border: 2px solid #28a745; background: #f0fff4;">
+                <div class="metric-label">Test Example</div>
+                <div class="metric-value">Perfect</div>
+                <div class="metric-unit">"islet" → predicted exactly</div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <p class="text-justify">
+                    The 26-letter confusion matrix on the test set shows a clearly dominant diagonal, indicating strong per-character recognition performance across the alphabet. Frequently occurring letters such as <strong>l, e, a, n, i, s</strong> achieve the highest accuracy, consistent with their abundance in the training vocabulary. Errors concentrate between visually similar cursive shapes: <strong>u and v</strong> are frequently confused, as are <strong>m and n</strong>, which is expected given their resemblance in continuous one-stroke handwriting. Rare letters like <strong>q, x, and z</strong> have very few training samples and correspondingly higher error rates. Augmenting the dataset with more words containing these characters would directly improve their robustness.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <div class="row-image" style="text-align: center;">
+                    <!-- IMAGE SUGGESTION: 26×26 confusion matrix (Figure 4 from technical report, page 11) — rows = true letters a-z, columns = predicted letters, color-coded with strong diagonal, visible off-diagonal entries near u/v and m/n, color bar on right side -->
+                    <img src="img/GRO722/confusion_matrix_test.png" alt="26-Letter Confusion Matrix — Test Set" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>26-Letter Confusion Matrix — Test Set</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-12">
+                <div class="row-image">
+                    <!-- IMAGE SUGGESTION: 5-panel translation example visualization (Figure 5 from technical report, pages 13–14) — one panel per letter of the word "islet", showing Target: islet / Prediction: islet header, and in each panel the full handwritten trajectory with darker dots indicating where the attention focused for that letter's prediction -->
+                    <img src="img/GRO722/translation_example_islet.png" alt="Translation Example with Attention Weights — Word 'islet'" style="width: 100%;">
+                </div>
+                <p class="text-justify">
+                    The test example for the word <strong>"islet"</strong> demonstrates a perfect prediction. Each panel corresponds to one predicted letter, and the darker dots indicate the trajectory regions that attracted the highest attention weights. The model correctly attends to the geometrically distinctive transition at the start of each letter stroke: the "s" prediction focuses on the leftward curve, while "l" triggers attention on the steep vertical ascent. This qualitative result confirms that the attention mechanism has learned to exploit meaningful geometric structure in the trajectory, rather than relying on positional shortcuts or spurious correlations.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: CONCLUSION & FUTURE PERSPECTIVES -->
+    <section class="mb-5">
+        <h2 class="section-title">6. Conclusion & Future Perspectives</h2>
+
+        <div class="conclusion-box">
+            <h3>Project Summary</h3>
+
+            <p class="text-justify">
+                This project validated the <strong>feasibility of a proof of concept</strong> for handwriting-to-text translation using recurrent neural networks. A Seq2Seq architecture combining a bidirectional LSTM encoder, a unidirectional LSTM decoder, and a dot-product attention mechanism achieves robust translation of 2D handwriting trajectories into letter sequences — entirely within a strict deployment budget of <strong>9,841 parameters</strong> out of the permitted 10,000.
+            </p>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Successes</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>Robust Seq2Seq translation with <strong>validation edit distance ~0.4</strong> — majority of predictions correct or near-correct</li>
+                <li>Strong 26-letter confusion matrix with <strong>dominant diagonal</strong> — high per-letter accuracy across the alphabet</li>
+                <li>Respect of parameter constraint — <strong>9,841 / 10,000 parameters used</strong></li>
+                <li>Effective attention mechanism — model learns to focus on letter transition points in the trajectory</li>
+                <li>Perfect prediction example on test word "islet" with interpretable attention weights</li>
+                <li>Modular, well-documented code across dataset.py, models.py, metrics.py, and main.py</li>
+            </ul>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Learnings</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li>LSTM is essential for long, variable-length handwriting sequences — its gated memory cells prevent vanishing gradients</li>
+                <li>Bidirectional encoding creates richer trajectory representations when the full sequence is available at encoding time</li>
+                <li>Attention eliminates the encoder-decoder bottleneck and dramatically improves Seq2Seq sequence translation</li>
+                <li>Teacher forcing can cause repeated letter predictions — using the model's own outputs as next-step inputs is more stable</li>
+                <li>Coordinate normalization to [0, 1] is critical: raw coordinates vary too greatly across words of different lengths and writing styles</li>
+                <li>A small, well-designed model is fully capable of complex sequential translation — architecture quality matters more than raw parameter count</li>
+            </ul>
+
+            <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
+            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li><strong>Data Augmentation:</strong> Add more words containing rare letters (q, x, z) to improve per-character accuracy for underrepresented symbols</li>
+                <li><strong>Transformer Attention:</strong> Explore multi-head self-attention as a potential replacement for the LSTM encoder within the same parameter budget</li>
+                <li><strong>Longer Words:</strong> Extend the dataset to words with more than 5 letters to evaluate generalization to longer sequences</li>
+                <li><strong>Bidirectional Evaluation:</strong> Formally compare bidirectional vs. unidirectional encoder performance with identical hyperparameters</li>
+                <li><strong>Real IMU Data:</strong> Validate on raw smartwatch sensor data to assess domain transfer from preprocessed 2D coordinates</li>
+                <li><strong>CTC Loss:</strong> Explore Connectionist Temporal Classification as an alignment-free alternative to token-by-token cross-entropy training</li>
+                <li><strong>Quantization:</strong> Reduce model footprint further for deployment on microcontrollers with very limited flash memory</li>
+            </ul>
+        </div>
+
+        <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Resources & Links</h3>
+
+        <a href="[GITHUB_URL]" class="github-link" target="_blank">
+            <i class="fab fa-github"></i> View Complete Source Code on GitHub
+        </a>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: var(--light); border-radius: 8px;">
+            <h5 style="color: var(--dark); margin-bottom: 1rem;">Associated Documents</h5>
+            <ul style="margin: 0; padding-left: 1.5rem;">
+                <li><strong>Project Statement:</strong> Problematique_gro722_guide_etudiant_H25.pdf</li>
+                <li><strong>Technical Report:</strong> GRO722_cora5428-them0901.pdf</li>
+                <li><strong>Source Code:</strong> dataset.py, models.py, metrics.py, main.py on GitHub</li>
+            </ul>
+        </div>
+    </section>
+
+</div>
+
+<!-- Modal for image expansion -->
+<div id="imageModal" class="modal">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+    // Image modal functionality
+    function openImageModal(imageSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imageSrc;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('imageModal');
+        if (event.target === modal) {
+            closeImageModal();
+        }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+
+    // Make images clickable for modal
+    document.querySelectorAll('.row-image img').forEach(img => {
+        img.style.cursor = 'pointer';
+        img.onclick = function() {
+            openImageModal(this.src);
+        };
+    });
+</script>
+
+</body>
+</html>

@@ -52,7 +52,7 @@
             </div>
         </div>
     </nav>
-    <div class="container-fluid bg-light my-6 mt-3" id="home">
+    <div class="container-fluid my-6 mt-3" id="home" style="position: relative; background-image: linear-gradient(to bottom, transparent 50%, white 100%), url(img/pngtreehexbg.png); background-size: cover; background-repeat: no-repeat; background-position: right center;">
         <div class="container">
             <div class="row g-5 align-items-center">
                 <div class="col-lg-6">
@@ -77,7 +77,7 @@
             </div>
         </div>
     </div>
-    <div class="container-xxl py-6 pb-5" id="skill" style="margin-top: 15rem;">
+    <div class="container-xxl py-6 pb-5" id="skill">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-12 wow fadeInUp" data-wow-delay="0.1s">
@@ -93,11 +93,22 @@
                     <div class="tab-content">
                         <div id="my-skills" class="tab-pane fade show p-0 active">
                             <div class="row">    
+                                 <div class="col-md-3">
+                                    <h4 class="skills-category-title">Automation</h4>
+                                    <div class="skill mb-4">
+                                        <h6 class="font-weight-bold">Claude Code</h6>
+                                        <h6 class="font-weight-bold">Prompt Engineering</h6>
+                                        <h6 class="font-weight-bold">AI Agents</h6>
+                                        <h6 class="font-weight-bold">n8n</h6>
+                                        <h6 class="font-weight-bold">Copilot Studio</h6>
+                                    </div>
+                                </div>
                                 <div class="col-md-3">
                                     <h4 class="skills-category-title">Coding</h4>
                                     <div class="skill mb-4">
                                         <h6 class="font-weight-bold">Python, PyTorch, C/C++</h6>
                                         <h6 class="font-weight-bold">Neural Networks, MultiThreading</h6>
+                                        <h6 class="font-weight-bold">Linux</h6>
                                         <h6 class="font-weight-bold">HTML and CSS</h6>
                                     </div>
                                 </div>
@@ -106,15 +117,11 @@
                                     <div class="skill mb-4">
                                         <h6 class="font-weight-bold">ROS, PLC (Ladder/SFC)</h6>
                                         <h6 class="font-weight-bold">Universal, FANUC, Kinova Robots</h6>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <h4 class="skills-category-title">Mechanics</h4>
-                                    <div class="skill mb-4">
                                         <h6 class="font-weight-bold">SolidWorks/3D CAD</h6>
                                         <h6 class="font-weight-bold">Dynamics & Statics</h6>
                                     </div>
                                 </div>
+                        
                                 <div class="col-md-3">
                                     <h4 class="skills-category-title">Electronics</h4>
                                     <div class="skill mb-4">
@@ -200,6 +207,17 @@
             </div>
 
                 <div class="row g-4 portfolio-container wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="col-lg-4 col-md-6 portfolio-item first">
+                        <div class="portfolio-img rounded overflow-hidden">
+                            <img class="img-fluid" src="img/DDPM_celebA/EminemMaleToFemale.jpg" alt="DDPM Project">
+                            <div class="portfolio-description">
+                                <p style="padding: 0 50px;">Conditional Diffusion Model for Face-to-Face Attribute Translation (cDDPM)</p>
+                            </div>
+                            <div class="portfolio-btn">
+                                <a class="btn btn-lg-square btn-outline-secondary border-2 mx-1" href="DDPM_CelebA.html"><i class="fa fa-link"></i></a>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-lg-4 col-md-6 portfolio-item first">
                         <div class="portfolio-img rounded overflow-hidden">
                             <img class="img-fluid" src="img/GRO721/SuitCaseAPP2.png" alt="CNN Project">
@@ -295,7 +313,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
         </div>
     </div>
     <div class="container-fluid bg-dark text-white py-4">
