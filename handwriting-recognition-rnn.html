@@ -337,8 +337,8 @@
 
                 <div class="row-image" style="margin-top: 2rem; text-align: center;">
                     <!-- IMAGE SUGGESTION: sample handwritten word "neuron" from Figure 1 of the project definition PDF — trajectory rendered as scattered 2D dots tracing the cursive stroke -->
-                    <img src="img/GRO722/dataset sample.png" alt="Sample Handwritten Word — 2D Coordinate Trajectory" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Sample Dataset Entry — Handwritten word "neuron" as 2D coordinate trajectory</small></p>
+                    <img src="img/GRO722/dataset sample.png" alt="Sample Handwritten Word as 2D Coordinate Trajectory" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Sample Dataset Entry: Handwritten word "neuron" as 2D coordinate trajectory</small></p>
                 </div>
             </div>
         </div>
@@ -358,7 +358,7 @@
                 </p>
 
                 <p class="text-justify" style="margin-top: 1rem;">
-                    Think of reading a handwritten word both left-to-right and right-to-left simultaneously — the model sees the full context of the trajectory before committing to an encoding. Because the full sequence is known upfront, using both directions is both valid and beneficial.
+                    Reading the word both left-to-right and right-to-left lets the model see the full context of the trajectory before encoding it. Because the full sequence is available upfront, using both directions is valid and beneficial.
                 </p>
 
                 <div class="model-overview">
@@ -387,11 +387,11 @@
                 <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 Unidirectional LSTM Decoder with Embedding</h3>
 
                 <p class="text-justify">
-                    The decoder generates the output word <strong>letter by letter</strong>, left to right, one step at a time. A unidirectional LSTM is used because the decoder must predict each character without knowledge of future letters — a bidirectional decoder would be conceptually invalid here, as it would require access to letters that do not yet exist at prediction time.
+                    The decoder generates the output word <strong>letter by letter</strong>, left to right, one step at a time. A unidirectional LSTM is used because the decoder must predict each character without knowing what comes next. A bidirectional decoder would not work here since it would need access to letters that have not been generated yet.
                 </p>
 
                 <p class="text-justify" style="margin-top: 1rem;">
-                    At each decoding step, the decoder receives the <strong>embedding vector</strong> of the previously predicted letter. The embedding layer maps each character — including special tokens &lt;sos&gt;, &lt;eos&gt;, &lt;pad&gt; — into a dense 18-dimensional vector space, helping the model generalize across the 29-symbol vocabulary.
+                    At each decoding step, the decoder receives the <strong>embedding vector</strong> of the previously predicted letter. The embedding layer maps each character (including special tokens &lt;sos&gt;, &lt;eos&gt;, &lt;pad&gt;) into an 18-dimensional vector space, which helps the model generalize across the 29-symbol vocabulary.
                 </p>
 
                 <div class="model-overview">
@@ -399,12 +399,12 @@
                     <ul style="margin: 0; padding-left: 1.5rem;">
                         <li><strong>Architecture:</strong> Unidirectional LSTM</li>
                         <li><strong>Embedding:</strong> Character embedding layer</li>
-                        <li><strong>No Teacher Forcing:</strong> Predicted output used as next-step input — avoids error compounding</li>
+                        <li><strong>No Teacher Forcing:</strong> Predicted output used as next-step input, which avoids error compounding</li>
                     </ul>
                 </div>
 
                 <p class="text-justify" style="margin-top: 1rem;">
-                    Teacher forcing was deliberately excluded: feeding the model's own predictions as next-step inputs — rather than ground-truth letters — prevents a failure mode where errors compound and cause repeated letter predictions throughout the output sequence.
+                    Teacher forcing was deliberately excluded. Using the model's own predictions as inputs (rather than ground-truth letters) prevents errors from compounding and causing repeated letter predictions in the output.
                 </p>
             </div>
 
@@ -445,7 +445,7 @@
                 <div class="row-image" style="text-align: center;">
                     <!-- IMAGE SUGGESTION: full Seq2Seq block diagram (Figure 1 from technical report, page 6) showing encoder → embedding → decoder → attention → output pipeline with parameter count annotations per layer -->
                     <img src="img/GRO722/architecture_seq2seq_attention.png" alt="Full Seq2Seq Architecture with Attention" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Seq2Seq Architecture with Attention — Detailed Block Diagram</small></p>
+                    <p class="mt-2 text-muted"><small>Seq2Seq Architecture with Attention</small></p>
                 </div>
             </div>
         </div>
@@ -477,8 +477,8 @@
                     <h6 style="color: var(--primary);">Architectural Choices Made</h6>
                     <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
                         <li><strong>Chose Bidirectional LSTM encoder + LSTM decoder</strong> based on sequence length and parameter constraints</li>
-                        <li><strong>Bidirectional Encoder:</strong> Full trajectory is known before decoding — observing both directions yields richer representations</li>
-                        <li><strong>Unidirectional Decoder:</strong> Letters generated left-to-right; future letters unknown at decode time — bidirectional would be incoherent</li>
+                        <li><strong>Bidirectional Encoder:</strong> The full trajectory is known before decoding, so reading in both directions gives richer representations</li>
+                        <li><strong>Unidirectional Decoder:</strong> Letters are generated left-to-right and future letters are unknown at decode time, so bidirectional decoding is not possible</li>
                         <li><strong>No Teacher Forcing:</strong> Prevents error propagation; predicted outputs used as next step inputs throughout training</li>
                     </ul>
                 </div>
@@ -486,13 +486,13 @@
                 <div class="model-overview" style="border-left: 4px solid #ff6b6b; margin-top: 1rem;">
                     <h6 style="color: #ff6b6b;">Critical Constraint: Hidden Dimension Trade-off</h6>
                     <p style="margin: 0.5rem 0;">
-                        Hidden dimension set to <strong>18</strong> — the maximum value keeping total parameters under 10,000. The final count is 9,841 (only 159 parameters from the hard limit).
+                        The hidden dimension is set to <strong>18</strong>, which is the highest value that keeps total parameters below 10,000. The final count is 9,841 (only 159 parameters away from the limit).
                     </p>
                     <p style="margin: 0.5rem 0; font-size: 0.95rem;">
                         <strong>Root Cause:</strong> Every layer in the model (encoder, embedding, decoder, attention, FC) contributes to the budget. The hidden dimension of 18 was the maximum achievable value that satisfied all constraints simultaneously.
                     </p>
                     <p style="margin: 0.5rem 0; font-size: 0.95rem;">
-                        <strong>Learning:</strong> A small, well-designed model can be fully capable — architecture quality matters far more than raw parameter count.
+                        <strong>Learning:</strong> A small, well-designed model can still perform well. Architecture quality matters more than raw parameter count.
                     </p>
                 </div>
 
@@ -528,7 +528,7 @@
                             <td>~0.1</td>
                             <td>~0.4</td>
                             <td>50–300</td>
-                            <td>Stable — robust generalization</td>
+                            <td>Stable, good generalization</td>
                         </tr>
                     </tbody>
                 </table>
@@ -562,13 +562,13 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
         <!-- Loss Results -->
         <h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">4.1 Training & Validation Loss</h3>
 
-        <p class="text-justify">A final training loss of ~0.05 after 300 epochs, with no upward divergence in validation loss, shows the model is learning genuine representations without overfitting — all within fewer than 10,000 parameters.</p>
+        <p class="text-justify">A final training loss of ~0.05 after 300 epochs, with no upward divergence in validation loss, shows the model is learning genuine representations without overfitting. This is achieved with fewer than 10,000 parameters.</p>
 
         <div class="metrics-grid">
             <div class="metric-card" style="border: 2px solid var(--primary); background: #f0f4ff;">
                 <div class="metric-label">Final Train Loss</div>
                 <div class="metric-value">~0.05</div>
-                <div class="metric-unit">CrossEntropy — stable convergence</div>
+                <div class="metric-unit">CrossEntropy, stable convergence</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Total Parameters</div>
@@ -585,13 +585,13 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
         <div class="row mt-4">
             <div class="col-lg-6">
                 <p class="text-justify">
-                    The loss curve drops steeply in the first 50 epochs, then levels off with training loss reaching ~0.05 and validation stabilizing above it — a clean convergence with no divergence. The gap between training and validation is normal and expected given the variability in word length and handwriting style across samples.
+                    The loss curve drops steeply in the first 50 epochs, then levels off with training loss reaching ~0.05 and validation stabilizing above it. No divergence was observed. The gap between training and validation is normal given the variability in word length and handwriting style across samples.
                 </p>
             </div>
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/GRO722/train_loss_curves.png" alt="Training and Validation Loss — 300 Epochs" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Training & Validation Loss Curves — 300 Epochs</small></p>
+                    <img src="img/GRO722/train_loss_curves.png" alt="Training and Validation Loss (300 Epochs)" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Training and Validation Loss Curves (300 epochs)</small></p>
                 </div>
             </div>
         </div>
@@ -599,13 +599,13 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
         <div class="row mt-4 align-items-center">
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/GRO722/Distance curve.png" alt="Edit Distance Curves — Training and Validation" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Edit Distance Curves — 300 Epochs</small></p>
+                    <img src="img/GRO722/Distance curve.png" alt="Edit Distance Curves, Training and Validation" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Edit Distance Curves (300 epochs)</small></p>
                 </div>
             </div>
             <div class="col-lg-6">
                 <p class="text-justify">
-                    The Levenshtein edit distance counts the minimum number of single-character operations — insertions, deletions, or substitutions — needed to transform the predicted sequence into the ground-truth word. A score of 0 is a perfect prediction; a score of 1 means exactly one character differs.
+                    The Levenshtein edit distance counts the minimum number of single-character operations (insertions, deletions, or substitutions) needed to transform the predicted sequence into the ground-truth word. A score of 0 is a perfect prediction; a score of 1 means exactly one character differs.
                 </p>
                 <p class="text-justify">
                     The rapid drop from ~4.0 to below 1.0 in the first 50 epochs shows the model quickly learns to align sequences. The final plateau at ~0.4 for validation indicates the majority of predictions are either fully correct or off by a single character.
@@ -616,7 +616,7 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
         <!-- Edit Distance Results -->
         <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.2 Edit Distance (Levenshtein)</h3>
 
-        <p class="text-justify">A validation edit distance below 0.5 means the majority of predicted words are either fully correct or differ from the target by at most one character insertion, deletion, or substitution — achieved within the strict 10,000-parameter constraint.</p>
+        <p class="text-justify">A validation edit distance below 0.5 means most predicted words are either correct or off by one character. This was achieved within the 10,000-parameter limit.</p>
 
         <div class="metrics-grid">
             <div class="metric-card">
@@ -679,8 +679,8 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
             <div class="col-lg-6">
                 <div class="row-image" style="text-align: center;">
                     <!-- IMAGE SUGGESTION: 26×26 confusion matrix (Figure 4 from technical report, page 11) — rows = true letters a-z, columns = predicted letters, color-coded with strong diagonal, visible off-diagonal entries near u/v and m/n, color bar on right side -->
-                    <img src="img/GRO722/confusion_matrix_test.png" alt="26-Letter Confusion Matrix — Test Set" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>26-Letter Confusion Matrix — Test Set</small></p>
+                    <img src="img/GRO722/confusion_matrix_test.png" alt="26-Letter Confusion Matrix (Test Set)" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>26-Letter Confusion Matrix (Test Set)</small></p>
                 </div>
             </div>
         </div>
@@ -708,7 +708,7 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
         <div class="model-overview" style="margin-top: 1.5rem; border-left: 4px solid var(--primary);">
             <h5>Reading the attention maps</h5>
             <p style="margin: 0.5rem 0;">
-                Attention weights highlight where the model focuses when predicting each letter. The model learned to anchor on transition points between letters — where direction and curvature change.
+                Attention weights highlight where the model focuses when predicting each letter. The model learned to focus on transition points between letters, where the direction and curvature of the stroke change.
             </p>
         </div>
 
@@ -762,15 +762,15 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
             <h3>Project Summary</h3>
 
             <p class="text-justify">
-                This project validated the <strong>feasibility of a proof of concept</strong> for handwriting-to-text translation using recurrent neural networks. A Seq2Seq architecture combining a bidirectional LSTM encoder, a unidirectional LSTM decoder, and a dot-product attention mechanism achieves robust translation of 2D handwriting trajectories into letter sequences — entirely within a strict deployment budget of <strong>9,841 parameters</strong> out of the permitted 10,000.
+                This project validated the feasibility of handwriting-to-text translation using recurrent neural networks. A Seq2Seq architecture with a bidirectional LSTM encoder, unidirectional LSTM decoder, and dot-product attention mechanism achieves solid translation of 2D handwriting trajectories into letter sequences. The full model uses only <strong>9,841 parameters</strong>, within the 10,000 limit.
             </p>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Successes</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li>Robust Seq2Seq translation with <strong>validation edit distance ~0.4</strong> — majority of predictions correct or near-correct</li>
-                <li>Strong 26-letter confusion matrix with <strong>dominant diagonal</strong> — high per-letter accuracy across the alphabet</li>
-                <li>Respect of parameter constraint — <strong>9,841 / 10,000 parameters used</strong></li>
-                <li>Effective attention mechanism — model learns to focus on letter transition points in the trajectory</li>
+                <li>Seq2Seq translation with a <strong>validation edit distance of ~0.4</strong>; most predictions are correct or off by one character</li>
+                <li>Strong 26-letter confusion matrix with a clear diagonal, showing good per-letter accuracy across the alphabet</li>
+                <li>Parameter constraint respected: <strong>9,841 out of 10,000 parameters used</strong></li>
+                <li>Effective attention mechanism: the model learned to focus on letter transition points in the trajectory</li>
                 <li>Perfect prediction example on test word "islet" with interpretable attention weights</li>
                 <li>Modular, well-documented code across dataset.py, models.py, metrics.py, and main.py</li>
             </ul>
@@ -778,7 +778,7 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Learnings</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
                 <li>Bidirectional encoding creates richer trajectory representations when the full sequence is available at encoding time</li>
-                <li>Teacher forcing can cause repeated letter predictions — using the model's own outputs as next-step inputs is more stable</li>
+                <li>Teacher forcing can cause repeated letter predictions. Using the model's own outputs as inputs is more stable</li>
                 <li>Coordinate normalization to [0, 1] is critical: raw coordinates vary too greatly across words of different lengths and writing styles</li>
             </ul>
 

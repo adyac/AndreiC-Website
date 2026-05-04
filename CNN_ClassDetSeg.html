@@ -343,7 +343,7 @@
 
                 <div class="row-image" style="margin-top: 2rem; text-align: center;">
                     <img src="img/GRO721/Sample_image_GRO721.png" alt="Sample Dataset Image" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Sample Dataset Image — 53×53 px in grayscale</small></p>
+                    <p class="mt-2 text-muted"><small>Sample Dataset Image (53×53 px, grayscale)</small></p>
                 </div>
             </div>
         </div>
@@ -386,7 +386,7 @@
             <div class="col-lg-5">
                 <div class="row-image" style="text-align: center;">
                     <img src="img/GRO721/architecutre_classification.png" alt="Classification Architecture" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Classification Architecture — Detailed Diagram</small></p>
+                    <p class="mt-2 text-muted"><small>Classification Architecture</small></p>
                 </div>
             </div>
         </div>
@@ -462,7 +462,7 @@
             <div class="col-lg-5">
                 <div class="row-image" style="text-align: center;">
                     <img src="img/GRO721/architecture_UNet_segmentation.png" alt="U-Net Segmentation Architecture" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>U-Net Segmentation Architecture — Detailed Diagram</small></p>
+                    <p class="mt-2 text-muted"><small>U-Net Segmentation Architecture</small></p>
                 </div>
             </div>
         </div>
@@ -482,7 +482,7 @@
 
                 <h5 style="margin-top: 1.5rem;">Dataset & Preprocessing</h5>
                 <p class="text-justify">
-                    Custom <code>ConveyorSimulator</code> Dataset class loads ~270 48×48 grayscale images. Split: <strong>90% train (243 images) + 10% validation (27 images)</strong>. Preprocessing: simple <code>ToTensor()</code> normalization—no augmentation after finding it destroys geometric shape classification performance.
+                    Custom <code>ConveyorSimulator</code> Dataset class loads ~270 48×48 grayscale images. Split: <strong>90% train (243 images) + 10% validation (27 images)</strong>. Preprocessing: simple <code>ToTensor()</code> normalization. No augmentation was used since we found it destroys geometric shape classification performance.
                 </p>
 
                 <h5 style="margin-top: 1.5rem;">Optimization Strategy</h5>
@@ -493,10 +493,10 @@
                 <div class="model-overview" style="margin-top: 1rem;">
                     <h6 style="color: var(--primary);">Regularization Techniques Applied</h6>
                     <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                        <li><strong>Batch normalization</strong> after each conv layer — normalized activation distributions, stabilized training</li>
-                        <li><strong>Spatial dropout (0.2)</strong> on conv features — reduced overfitting in convolutional layers</li>
-                        <li><strong>Dropout (0.2)</strong> on FC layers — forced robust feature learning</li>
-                        <li><strong>L2 Regularization</strong> (weight_decay=1e-4) — penalized large weights, improved generalization</li>
+                        <li><strong>Batch normalization</strong> after each conv layer, which normalizes activation distributions and stabilizes training</li>
+                        <li><strong>Spatial dropout (0.2)</strong> on conv features, which reduced overfitting in convolutional layers</li>
+                        <li><strong>Dropout (0.2)</strong> on FC layers to encourage more robust feature learning</li>
+                        <li><strong>L2 Regularization</strong> (weight_decay=1e-4) to penalize large weights and improve generalization</li>
                     </ul>
                 </div>
 
@@ -509,7 +509,7 @@
                         <strong>Root Cause:</strong> Geometric shapes (circles, triangles, crosses) have inherent orientation. Aggressive augmentation breaks shape recognition. For this task, NO augmentation proved optimal.
                     </p>
                     <p style="margin: 0.5rem 0; font-size: 0.95rem;">
-                        <strong>Learning:</strong> Not all augmentation is beneficial—must match strategy to task characteristics.
+                        <strong>Learning:</strong> Not all augmentation is beneficial. The strategy has to fit the specific task.
                     </p>
                 </div>
 
@@ -545,7 +545,7 @@
                             <td>93.9%</td>
                             <td>93.0%</td>
                             <td>0.95%</td>
-                            <td>Optimal — minimal overfitting</td>
+                            <td>Optimal, minimal overfitting</td>
                         </tr>
                     </tbody>
                 </table>
@@ -623,7 +623,7 @@ Loss Function:       <strong>binary cross-entropy loss</strong>
                     <img src="img/GRO721/eval_test_classification_prediction.png" alt="Model Classification Predictions - Shapes with Predictions" style="width: 100%;">
                 </div>
                 <p class="text-justify">
-                    Tests on images show that the model recognizes shapes correctly. The main error cases correspond to overlapping shapes or partially visible shapes. Careful, shape-preserving augmentation may help — though aggressive transforms hurt this dataset (see Section 3).
+                    Tests on images show that the model recognizes shapes correctly. The main error cases correspond to overlapping shapes or partially visible shapes. Careful, shape-preserving augmentation may help, though aggressive transforms hurt performance on this dataset (see Section 3).
                 </p>
             </div>
         </div>
@@ -755,10 +755,10 @@ Loss Function:       <strong>binary cross-entropy loss</strong>
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Successes</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
                 <li>Robust classification with <strong>96.0% test accuracy</strong> on 100-sample test set</li>
-                <li>Precise segmentation with <strong>86.0% IoU</strong> — Very efficient U-Net with skip-connections</li>
-                <li>Respect of parameter constraints — All models < defined limits</li>
-                <li>Acceptable inference time — ~14-18 ms for the full pipeline</li>
-                <li>Modular and well-documented code — Adaptable for other image tasks</li>
+                <li>Precise segmentation with <strong>86.0% IoU</strong> using a compact U-Net with skip-connections</li>
+                <li>All three models respect the parameter limits defined in the project constraints</li>
+                <li>Acceptable inference time of ~14-18 ms for the full pipeline</li>
+                <li>Modular and well-documented code that can be adapted for other image tasks</li>
             </ul>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Learnings</h4>
