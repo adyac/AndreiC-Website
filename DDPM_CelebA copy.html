@@ -318,7 +318,7 @@
                 <ul class="text-justify">
                     <li><strong>Primary task:</strong> Facial attribute translation on the CelebA dataset. Male portraits are converted to female and vice versa.</li>
                     <li><strong>Secondary task:</strong> Day-to-night landscape conversion, used to benchmark generalization beyond facial data.</li>
-                    <li><strong>Evaluation:</strong> Huber Loss tracks training convergence.</li>
+                    <li><strong>Evaluation:</strong> KID (Kernel Inception Distance) measures output quality against the target distribution. Huber Loss tracks training convergence.</li>
                 </ul>
             </div>
 
@@ -391,7 +391,7 @@
                 <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 FiLM Conditioning Mechanism</h3>
 
                 <p class="text-justify">
-                    Conditioning is applied through <strong>FiLM (Feature-wise Linear Modulation)</strong>. A lightweight CNN encoder processes the condition image and outputs a compact latent vector. Two linear projections map that vector to a scale factor <strong>γ</strong> and a shift factor <strong>β</strong>. These two parameters modulate every intermediate feature map inside the U-Net ResNet blocks.
+                    Conditioning is applied through <strong>FiLM (Feature-wise Linear Modulation)</strong>. A lightweight CNN encoder processes the condition image and outputs a compact latent vector. Two linear projections map that vector to a scale factor <strong>γ</strong> and a shift factor <strong>β</strong>. These two parameters modulate every intermediate feature map inside the U-Net ResNet blocks: FiLM(x) = γ ⊙ x + β.
                 </p>
 
                 <p class="text-justify" style="margin-top: 1rem;">
@@ -405,6 +405,7 @@
                         <li><strong>Scale (γ):</strong> Multiplies each feature map channel-wise to amplify or suppress activations</li>
                         <li><strong>Shift (β):</strong> Adds a learned offset per channel after scaling</li>
                         <li><strong>Scope:</strong> Applied inside every ResNet block in the encoder and decoder</li>
+                        <li><strong>Formula:</strong> FiLM(x) = γ ⊙ x + β, where x is the intermediate feature tensor</li>
                     </ul>
                 </div>
 
@@ -427,6 +428,56 @@
         <div class="row mb-4" style="margin-top: 2rem;">
             <div class="col-lg-12">
                 <h3 style="color: var(--primary); margin-bottom: 1rem;">2.3 Attention Placement Strategy</h3>
+
+                <p class="text-justify">
+                    Attention is not applied uniformly across the network. Each location in the U-Net has a different representational role, and the type of attention placed there was chosen to match that role. The table below summarizes what each attention type contributes at each network location.
+                </p>
+
+                <table class="comparison-table" style="margin-top: 1.5rem;">
+                    <thead>
+                        <tr>
+                            <th>Attention Type</th>
+                            <th>U-Net Feature Maps</th>
+                            <th>Skip Connections</th>
+                            <th>Latent Space (Bottleneck)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>No Attention</strong></td>
+                            <td style="color: #888;">N/A</td>
+                            <td>Direct concatenation only — no filtering</td>
+                            <td style="color: #888;">N/A</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Linear Self-Attention</strong></td>
+                            <td>Ensures spatial coherence of features modulated by the timestep embedding</td>
+                            <td>Encoder features are refined before being forwarded to the decoder</td>
+                            <td style="color: #888;">N/A</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cross-Attention</strong></td>
+                            <td>Selects relevant information from the condition at each position, based on the current noise level</td>
+                            <td>The decoder selectively filters which encoder features are actually useful for reconstruction</td>
+                            <td style="color: #888;">N/A</td>
+                        </tr>
+                        <tr style="background: #e8f5e9;">
+                            <td><strong>Full Self-Attention</strong></td>
+                            <td style="color: #888;">N/A</td>
+                            <td style="color: #888;">N/A</td>
+                            <td>Global coherence at the most compressed point — every position attends to every other</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="model-overview" style="margin-top: 1.5rem;">
+                    <h5>Why This Placement Matters</h5>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Feature maps (high resolution):</strong> Linear Self-Attention is used here because full attention would be prohibitively expensive at large spatial sizes. It maintains temporal and spatial consistency across feature channels without quadratic cost.</li>
+                        <li><strong>Skip connections:</strong> Cross-Attention here is critical — it prevents the decoder from blindly accepting encoder features that are not relevant to the requested domain translation. The condition (via cross-attention) actively selects what the decoder receives.</li>
+                        <li><strong>Latent space (bottleneck):</strong> Full Self-Attention is applied only here, where the spatial resolution is at its smallest. The computational cost is manageable, and global coherence at this level propagates through the entire decoder, shaping the output structure at the highest semantic level.</li>
+                    </ul>
+                </div>
 
                 <p class="text-justify" style="margin-top: 1rem;">
                     Think of it as three specialized filters placed at three key checkpoints: one that keeps the feature maps internally consistent while denoising, one that decides which encoder context the decoder should trust, and one that ensures the final compressed representation is globally coherent before reconstruction begins.
@@ -496,7 +547,7 @@
                 <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Classifier-Free Guidance (CFG)</h4>
 
                 <p class="text-justify">
-                    Without Classifier-Free Guidance, the condition can over-constrain the denoising process, pulling outputs toward outputs that follow the condition but look unnatural. CFG addresses this by randomly dropping the condition during training with a probability of <strong>20%</strong>. The model learns to generate under both conditioned and unconditioned paths.
+                    Without Classifier-Free Guidance, the condition can over-constrain the denoising process, pulling outputs toward a mode that satisfies the condition but deviates from a natural image distribution. CFG addresses this by randomly dropping the condition during training with a probability of <strong>20%</strong>. The model learns to generate under both conditioned and unconditioned paths.
                 </p>
 
                 <div class="model-overview" style="border-left: 4px solid var(--primary);">
@@ -516,8 +567,22 @@ CFG Dropout:        <strong>20%</strong>
 Scheduler:          <strong>Linear</strong>
 Injection:          <strong>FiLM</strong>
 Loss Function:      <strong>Huber</strong>
+Eval Metric:        <strong>KID</strong>
 Tasks:              <strong>CelebA, Day2Night</strong>
                     </div>
+                </div>
+
+                <div class="model-overview" style="margin-top: 1.5rem;">
+                    <h5>Training Pipeline</h5>
+                    <ol style="margin-top: 1rem; padding-left: 1.5rem; font-size: 0.95rem;">
+                        <li>Sample source image and condition image (paired or unpaired)</li>
+                        <li>Forward diffusion: add noise via linear scheduler across timesteps</li>
+                        <li>Drop condition with 20% probability (CFG training)</li>
+                        <li>Forward pass through U-Net with FiLM injection at each ResNet block</li>
+                        <li>Compute Huber loss against ground-truth noise</li>
+                        <li>Backward pass, update weights</li>
+                        <li>At inference: interpolate conditioned and unconditioned predictions via CFG</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -542,6 +607,11 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                 <div class="metric-unit">condition dropout rate</div>
             </div>
             <div class="metric-card">
+                <div class="metric-label">Quality Metric</div>
+                <div class="metric-value">KID</div>
+                <div class="metric-unit">Kernel Inception Distance</div>
+            </div>
+            <div class="metric-card">
                 <div class="metric-label">Training Loss</div>
                 <div class="metric-value">Huber</div>
                 <div class="metric-unit">robust to noise outliers</div>
@@ -554,7 +624,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                     Generated outputs show successful transfer of gender-linked attributes including hair length, facial structure, and apparent makeup. Source identity is not consistently preserved. The conditioning signal transfers target-domain attributes but provides no explicit anchor for source-specific structure, which allows identity drift.
                 </p>
                 <p class="text-justify">
-                    Adding a face recognition loss would constrain structural drift directly. Without it, extending training is unlikely to resolve the issue since the model receives no gradient signal penalizing identity change. FiLM injection produced visibly stronger attribute transfer than input concatenation, as shown in the sample comparison below.
+                    Adding a face recognition loss would constrain structural drift directly. Without it, extending training is unlikely to resolve the issue since the model receives no gradient signal penalizing identity change. FiLM's multi-depth injection is the design choice that produced attribute transfer quality at the level shown here — input concatenation alone would not have reached it.
                 </p>
             </div>
             <div class="col-lg-6">
@@ -577,7 +647,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
             </div>
             <div class="col-lg-6">
                 <p class="text-justify">
-                    Multi-depth FiLM injection produces stronger attribute transfer than input concatenation alone. A condition injected only at the input loses influence over deep layers where high-level semantic attributes such as facial structure and expression are represented. FiLM's reach across all ResNet blocks closes that gap by modulating both local texture features and global semantic features simultaneously. Visual comparison confirms that translation quality scales with how deeply the condition penetrates the network.
+                    Multi-depth FiLM injection produces stronger attribute transfer than input concatenation alone. A condition injected only at the input loses influence over deep layers where high-level semantic attributes such as facial structure and expression are represented. FiLM's reach across all ResNet blocks closes that gap by modulating both local texture features and global semantic features simultaneously. The KID difference between configurations reflects this directly: translation quality scales with how deeply the condition penetrates the network.
                 </p>
             </div>
         </div>
@@ -615,7 +685,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
         </table>
 
         <p class="text-justify" style="margin-top: 1rem;">
-            Diffusion models produce high-fidelity outputs but require significantly more compute at inference time than GANs. The GAN baseline reaches stable coherence faster on low-complexity domain shifts where the target distribution is narrow and well-defined, which makes Day2Night a competitive benchmark for it. The 54-epoch cDDPM result establishes how much training budget this architecture requires to reach comparable coherence.
+            Diffusion models produce high-fidelity outputs but require significantly more compute at inference time than GANs. The GAN baseline reaches stable coherence faster on low-complexity domain shifts where the target distribution is narrow and well-defined, which makes Day2Night a competitive benchmark for it. The 54-epoch cDDPM result establishes how much training budget this architecture requires to reach comparable coherence. On more complex tasks where the target domain is semantically richer, the diffusion model's iterative refinement advantage over adversarial training would be more pronounced.
         </p>
 
         <!-- 4.4 Personal Photo Test -->
@@ -667,8 +737,11 @@ Tasks:              <strong>CelebA, Day2Night</strong>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                <li><strong>Spatial Placeholder Conditioning:</strong> Reserve specific spatial areas in the feature maps to anchor semantic attributes, improving condition fidelity without over-constraining the denoising path</li>
                 <li><strong>Identity Loss:</strong> Add a face recognition loss term to penalize structural drift from the source identity during translation</li>
-                <li><strong>Deeper Condition Optimization:</strong> Extend training beyond 54 epochs with the conditioning scheme refined to reduce interference with the generation process</li>
+                <li><strong>Deeper Condition Optimization:</strong> Extend training beyond 54 epochs with the conditioning scheme refined to reduce interference with the denoising trajectory</li>
+                <li><strong>Attention-Based Injection:</strong> Replace or supplement FiLM with cross-attention over the condition latent for finer spatial control over where attributes are transferred</li>
+                <li><strong>Classifier Guidance:</strong> Combine CFG with a domain attribute classifier to apply semantic gradients at inference time</li>
             </ul>
         </div>
 
@@ -679,7 +752,15 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                     Conditioning Failure Example<br>
                     <small>Output where condition signal was not followed</small>
                 </div>
-                <p class="mt-2 text-muted" style="text-align: center;"><small>Example where the condition failed to redirect the generation process toward the target domain.</small></p>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Example where the condition failed to redirect the denoising trajectory toward the target domain.</small></p>
+            </div>
+            <div class="col-lg-6">
+                <!-- add image: sketch of the spatial placeholder concept for future conditioning work -->
+                <div class="image-placeholder">
+                    Spatial Placeholder Concept<br>
+                    <small>Proposed future conditioning approach</small>
+                </div>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Future direction: placeholder-based spatial conditioning that reserves feature map areas for targeted semantic attribute injection.</small></p>
             </div>
         </div>
 
@@ -690,6 +771,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
             <ul style="margin: 0; padding-left: 1.5rem;">
                 <li><strong>Primary Dataset:</strong> CelebA (Large-scale CelebFaces Attributes Dataset) — facial attribute annotations across 200k+ images</li>
                 <li><strong>Secondary Dataset:</strong> Day2Night landscape pairs for generalization benchmarking</li>
+                <li><strong>Source Code:</strong> Training and evaluation scripts (link to be added)</li>
             </ul>
         </div>
     </section>
