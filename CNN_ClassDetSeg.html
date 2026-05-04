@@ -299,7 +299,7 @@
         <div class="row mb-4">
             <div class="col-lg-8">
                 <p class="text-justify lead">
-                    This project is a <strong>proof of concept (PoC)</strong> for a baggage screening system design company. The objective is to determine the feasibility of developing commercial software based on deep learning techniques to automate the baggage examination process.
+                    This university course project (GRO721) explores the feasibility of CNN-based shape detection applied to a simplified baggage screening scenario.
                 </p>
 
                 <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Technical Goal</h4>
@@ -359,7 +359,7 @@
                 <h3 style="color: var(--primary); margin-bottom: 1rem;">2.1 Classification Network</h3>
                 
                 <p class="text-justify">
-                    The classification model identifies the <strong>presence or absence of each shape</strong> in an image. Inspired by AlexNet, the architecture consists of four segments (Conv + ReLU + MaxPool) for progressive feature extraction, followed by two fully-connected layers.
+                    The classification model identifies the <strong>presence or absence of each shape</strong> in an image. A 4-layer CNN with progressive feature extraction (Conv + ReLU + MaxPool) feeds two fully-connected layers for multi-label output.
                 </p>
 
                 <p class="text-justify" style="margin-top: 1rem;">
@@ -397,7 +397,7 @@
                 <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 Detection Network</h3>
                 
                 <p class="text-justify">
-                    The detection model generates <strong>bounding boxes</strong> around identified shapes. Inspired by YOLO, the network consists of three convolution segments with BatchNorm and LeakyReLU, producing an output of dimension (1, 3, 7) for a 3×7 grid.
+                    The detection model generates <strong>bounding boxes</strong> around identified shapes. A grid-based single-pass detection head uses three convolution segments with BatchNorm and LeakyReLU, producing an output of dimension (1, 3, 7) for a 3×7 grid.
                 </p>
 
                 <p class="text-justify" style="margin-top: 1rem;">
@@ -493,9 +493,9 @@
                 <div class="model-overview" style="margin-top: 1rem;">
                     <h6 style="color: var(--primary);">Regularization Techniques Applied</h6>
                     <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                        <li><strong>BatchNorm2d(16-128)</strong> after each conv layer — normalized activation distributions, stabilized training</li>
-                        <li><strong>Dropout2d(0.2)</strong> on conv features — prevented neuron co-adaptation, reduced overfitting</li>
-                        <li><strong>Dropout(0.2)</strong> on FC layers — forced robust feature learning</li>
+                        <li><strong>Batch normalization</strong> after each conv layer — normalized activation distributions, stabilized training</li>
+                        <li><strong>Spatial dropout (0.2)</strong> on conv features — reduced overfitting in convolutional layers</li>
+                        <li><strong>Dropout (0.2)</strong> on FC layers — forced robust feature learning</li>
                         <li><strong>L2 Regularization</strong> (weight_decay=1e-4) — penalized large weights, improved generalization</li>
                     </ul>
                 </div>
@@ -503,7 +503,7 @@
                 <div class="model-overview" style="border-left: 4px solid #ff6b6b; margin-top: 1rem;">
                     <h6 style="color: #ff6b6b;">Attempted but FAILED: Aggressive Data Augmentation</h6>
                     <p style="margin: 0.5rem 0;">
-                        Applied RandomRotation(10°), RandomAffine, RandomHorizontalFlip → <strong>Accuracy dropped to 50%</strong>
+                        Applied rotation, affine transforms, and horizontal flipping → <strong>Accuracy dropped to 50%</strong>
                     </p>
                     <p style="margin: 0.5rem 0; font-size: 0.95rem;">
                         <strong>Root Cause:</strong> Geometric shapes (circles, triangles, crosses) have inherent orientation. Aggressive augmentation breaks shape recognition. For this task, NO augmentation proved optimal.
@@ -545,7 +545,7 @@
                             <td>93.9%</td>
                             <td>93.0%</td>
                             <td>0.95%</td>
-                            <td>Optimal - Production Ready</td>
+                            <td>Optimal — minimal overfitting</td>
                         </tr>
                     </tbody>
                 </table>
@@ -563,37 +563,10 @@ Dropout (FC):        <strong>0.2</strong>
 Weight Decay:        <strong>1e-4</strong>
 Augmentation:        <strong>None</strong>
 Train-Val Split:     <strong>90-10</strong>
-Loss Function:       <strong>BCEWithLogitsLoss</strong>
+Loss Function:       <strong>binary cross-entropy loss</strong>
                     </div>
                 </div>
                 
-                <div class="model-overview" style="margin-top: 1.5rem;">
-                    <h5 style="color: var(--primary);">Training Pipeline</h5>
-                    <ol style="margin-top: 1rem; padding-left: 1.5rem; font-size: 0.95rem;">
-                        <li>Load training/validation split</li>
-                        <li>Initialize model + optimizer</li>
-                        <li>For each epoch:
-                            <ul style="margin-top: 0.5rem;">
-                                <li>Forward pass → loss</li>
-                                <li>Backward pass → gradients</li>
-                                <li>Update weights</li>
-                                <li>Validate on 27 samples</li>
-                            </ul>
-                        </li>
-                        <li>Save best weights (based on val loss)</li>
-                        <li>Final test on 100 samples</li>
-                    </ol>
-                </div>
-
-                <div class="model-overview" style="margin-top: 1.5rem;">
-                    <h5 style="color: var(--primary);">Lessons Learned</h5>
-                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                        <li>Importer les courbes de validation dès le départ</li>
-                        <li>Utiliser BatchNorm systématiquement</li>
-                        <li>Adapter l'architecture aux données</li>
-                        <li>Monitoring de la perte aide à identifier les problèmes</li>
-                    </ul>
-                </div>
             </div>
         </div>
     </section>
@@ -611,7 +584,7 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
             <div class="metric-card" style="border: 2px solid var(--primary); background: #f0f4ff;">
                 <div class="metric-label">Test Accuracy</div>
                 <div class="metric-value">96.0%</div>
-                <div class="metric-unit">Outstanding Performance</div>
+                <div class="metric-unit">on 100-sample test set</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Validation Accuracy</div>
@@ -633,7 +606,7 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
         <div class="row mt-4">
             <div class="col-lg-6">
                 <p class="text-justify">
-                    The classification model shows solid performance with <strong>92.5%</strong> accuracy. The training curve shows a progressive decrease in loss, while precision increases steadily. Fluctuations in validation may be caused by natural variations in the dataset.
+                    The classification model achieves <strong>96.0%</strong> test accuracy. The training curve shows a progressive decrease in loss while accuracy rises steadily. Fluctuations in validation may be caused by natural variations in the dataset.
                 </p>
             </div>
             <div class="col-lg-6">
@@ -650,7 +623,7 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
                     <img src="img/GRO721/eval_test_classification_prediction.png" alt="Model Classification Predictions - Shapes with Predictions" style="width: 100%;">
                 </div>
                 <p class="text-justify">
-                    Tests on images show that the model recognizes shapes correctly. The main error cases correspond to overlapping shapes or partially visible shapes. Performance can be improved through data augmentation (random rotations, zooms).
+                    Tests on images show that the model recognizes shapes correctly. The main error cases correspond to overlapping shapes or partially visible shapes. Careful, shape-preserving augmentation may help — though aggressive transforms hurt this dataset (see Section 3).
                 </p>
             </div>
         </div>
@@ -781,7 +754,7 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Successes</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li>Robust classification with <strong>92.5% accuracy</strong> — Production-ready performance</li>
+                <li>Robust classification with <strong>96.0% test accuracy</strong> on 100-sample test set</li>
                 <li>Precise segmentation with <strong>86.0% IoU</strong> — Very efficient U-Net with skip-connections</li>
                 <li>Respect of parameter constraints — All models < defined limits</li>
                 <li>Acceptable inference time — ~14-18 ms for the full pipeline</li>
@@ -799,11 +772,6 @@ Loss Function:       <strong>BCEWithLogitsLoss</strong>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li><strong>Data Augmentation:</strong> Random rotations, zooms, translations to improve generalization</li>
-                <li><strong>Detection:</strong> Reduce learning rate, implement NMS (Non-Maximum Suppression) to eliminate multiple detections</li>
-                <li><strong>Ensemble Learning:</strong> Combine all three models for more robust predictions</li>
-                <li><strong>Transfer Learning:</strong> Fine-tune on pre-trained models (ResNet, MobileNet) if resources allow</li>
-                <li><strong>Quantization:</strong> Reduce model size for deployment on limited hardware</li>
                 <li><strong>Test on Real Data:</strong> Validate on actual scanner images (domain transfer)</li>
             </ul>
         </div>

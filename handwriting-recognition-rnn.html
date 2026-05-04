@@ -304,7 +304,7 @@
 
                 <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Technical Goal</h4>
                 <p class="text-justify">
-                    Develop a sequence-to-sequence (Seq2Seq) system capable of translating 2D coordinate trajectories of handwritten words into the correct sequences of letters. Input data comes from preprocessed IMU (inertial measurement unit) data representing continuous one-stroke handwriting traces, where each word is a sequence of real 2D coordinates sampled at regular time intervals (x ∈ ℝ<sup>2×T</sup>).
+                    Develop a sequence-to-sequence (Seq2Seq) system capable of translating 2D coordinate trajectories of handwritten words into the correct sequences of letters. Input data comes from preprocessed IMU (inertial measurement unit) data representing continuous one-stroke handwriting traces as sequences of (x, y) coordinates over time.
                 </p>
 
                 <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Project Constraints</h4>
@@ -364,10 +364,8 @@
                 <div class="model-overview">
                     <h5>Design Choices</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Architecture:</strong> Bidirectional LSTM (input=2, hidden=18, layers=1)</li>
+                        <li><strong>Architecture:</strong> Bidirectional LSTM</li>
                         <li><strong>Input:</strong> 2D coordinates (x, y) normalized to [0, 1]</li>
-                        <li><strong>LSTM over Elman:</strong> Gated memory cells mitigate vanishing gradient on long sequences</li>
-                        <li><strong>LSTM over GRU:</strong> GRU lacks a separate input memory cell — less effective on complex trajectories</li>
                     </ul>
                 </div>
 
@@ -399,8 +397,8 @@
                 <div class="model-overview">
                     <h5>Design Choices</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Architecture:</strong> Unidirectional LSTM (input=18, hidden=18, layers=1)</li>
-                        <li><strong>Embedding:</strong> nn.Embedding(dict_size=29, hidden=18)</li>
+                        <li><strong>Architecture:</strong> Unidirectional LSTM</li>
+                        <li><strong>Embedding:</strong> Character embedding layer</li>
                         <li><strong>No Teacher Forcing:</strong> Predicted output used as next-step input — avoids error compounding</li>
                     </ul>
                 </div>
@@ -478,8 +476,7 @@
                 <div class="model-overview" style="margin-top: 1rem;">
                     <h6 style="color: var(--primary);">Architectural Choices Made</h6>
                     <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                        <li><strong>LSTM over Elman:</strong> Memory cells and gates handle long sequences without vanishing gradients</li>
-                        <li><strong>LSTM over GRU:</strong> GRU lacks a separate input memory cell, reducing capacity on complex trajectory patterns</li>
+                        <li><strong>Chose Bidirectional LSTM encoder + LSTM decoder</strong> based on sequence length and parameter constraints</li>
                         <li><strong>Bidirectional Encoder:</strong> Full trajectory is known before decoding — observing both directions yields richer representations</li>
                         <li><strong>Unidirectional Decoder:</strong> Letters generated left-to-right; future letters unknown at decode time — bidirectional would be incoherent</li>
                         <li><strong>No Teacher Forcing:</strong> Prevents error propagation; predicted outputs used as next step inputs throughout training</li>
@@ -554,35 +551,6 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
                     </div>
                 </div>
 
-                <div class="model-overview" style="margin-top: 1.5rem;">
-                    <h5 style="color: var(--primary);">Training Pipeline</h5>
-                    <ol style="margin-top: 1rem; padding-left: 1.5rem; font-size: 0.95rem;">
-                        <li>Load data from pickle files</li>
-                        <li>Normalize coordinates to [0, 1]</li>
-                        <li>Pad sequences + add special tokens</li>
-                        <li>Initialize Seq2Seq model + Adam optimizer</li>
-                        <li>For each epoch:
-                            <ul style="margin-top: 0.5rem;">
-                                <li>Encode full trajectory</li>
-                                <li>Decode letter by letter with attention</li>
-                                <li>Compute cross-entropy loss</li>
-                                <li>Validate edit distance</li>
-                            </ul>
-                        </li>
-                        <li>Save best weights (based on val loss)</li>
-                        <li>Final test: confusion matrix + attention plots</li>
-                    </ol>
-                </div>
-
-                <div class="model-overview" style="margin-top: 1.5rem;">
-                    <h5 style="color: var(--primary);">Lessons Learned</h5>
-                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                        <li>Coordinate normalization essential for stable training</li>
-                        <li>Attention dramatically outperforms plain Seq2Seq</li>
-                        <li>Bidirectional encoder yields richer representations</li>
-                        <li>Teacher forcing risks repeated letter predictions — avoid it</li>
-                    </ul>
-                </div>
             </div>
         </div>
     </section>
@@ -639,9 +607,6 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
                 <p class="text-justify">
                     The Levenshtein edit distance counts the minimum number of single-character operations — insertions, deletions, or substitutions — needed to transform the predicted sequence into the ground-truth word. A score of 0 is a perfect prediction; a score of 1 means exactly one character differs.
                 </p>
-                <div class="model-overview" style="text-align: center; padding: 1rem 1.5rem;">
-                    $$d(s_1, s_2) = \begin{cases} |s_1| & \text{if } |s_2| = 0 \\ |s_2| & \text{if } |s_1| = 0 \\ d(s_1[1:], s_2[1:]) & \text{if } s_1[0] = s_2[0] \\ 1 + \min \begin{pmatrix} d(s_1[1:], s_2) \\ d(s_1, s_2[1:]) \\ d(s_1[1:], s_2[1:]) \end{pmatrix} & \text{otherwise} \end{cases}$$
-                </div>
                 <p class="text-justify">
                     The rapid drop from ~4.0 to below 1.0 in the first 50 epochs shows the model quickly learns to align sequences. The final plateau at ~0.4 for validation indicates the majority of predictions are either fully correct or off by a single character.
                 </p>
@@ -743,10 +708,7 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
         <div class="model-overview" style="margin-top: 1.5rem; border-left: 4px solid var(--primary);">
             <h5>Reading the attention maps</h5>
             <p style="margin: 0.5rem 0;">
-                The <strong>black cluster of dots</strong> in each panel is the attention mechanism at work. It marks the exact region of the handwriting trajectory that the model weighted most heavily when predicting that letter. The rest of the trajectory fades to light grey — those points were effectively ignored for this particular prediction step.
-            </p>
-            <p style="margin: 0.5rem 0;">
-                Notice that the black cluster consistently lands <strong>between letters</strong>, not at the center of the stroke. This is intentional and correct. In continuous cursive writing, the most information-rich moment is the transition point where one letter ends and the next begins — that is where direction, velocity, and curvature all change simultaneously. The model learned, without explicit supervision, that anchoring attention at those junctions is the most reliable cue for deciding which character just completed. A model without attention would have to compress this entire signal into a single fixed vector.
+                Attention weights highlight where the model focuses when predicting each letter. The model learned to anchor on transition points between letters — where direction and curvature change.
             </p>
         </div>
 
@@ -822,9 +784,7 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li><strong>Transformer Attention:</strong> Explore multi-head self-attention as a potential replacement for the LSTM encoder within the same parameter budget</li>
                 <li><strong>Real IMU Data:</strong> Validate on raw smartwatch sensor data to assess domain transfer from preprocessed 2D coordinates</li>
-                <li><strong>CTC Loss:</strong> Explore Connectionist Temporal Classification as an alignment-free alternative to token-by-token cross-entropy training</li>
             </ul>
         </div>
 
@@ -892,15 +852,6 @@ Loss Function:       <strong>CrossEntropyLoss</strong>
     });
 </script>
 
-<script>
-    window.MathJax = {
-        tex: {
-            inlineMath: [['$', '$'], ['\\(', '\\)']],
-            displayMath: [['$$', '$$'], ['\\[', '\\]']]
-        }
-    };
-</script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 </body>
 </html>
