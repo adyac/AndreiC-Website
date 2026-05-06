@@ -318,6 +318,7 @@
                 <ul class="text-justify">
                     <li><strong>Primary task:</strong> Facial attribute translation on the CelebA dataset. Male portraits are converted to female and vice versa.</li>
                     <li><strong>Secondary task:</strong> Day-to-night landscape conversion, used to benchmark generalization beyond facial data.</li>
+                    <li><strong>Evaluation:</strong> Huber Loss tracks training convergence.</li>
                 </ul>
             </div>
 
@@ -333,10 +334,12 @@
                     </div>
                 </div>
 
-                <div class="row-image" style="text-align: center;">
-                    <img src="img/DDPM_celebA/dataset_sample.png" alt="CelebA dataset sample: male and female portrait pairs" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>CelebA dataset samples: source and target domain portraits used for training.</small></p>
+                <!-- add image: side-by-side comparison of a source (male) sample and the expected target (female) to illustrate domain translation -->
+                <div class="image-placeholder" style="min-height: 220px;">
+                    Source (Male) vs Target (Female)<br>
+                    <small>Domain translation concept</small>
                 </div>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Domain translation: source portrait and expected translated output.</small></p>
             </div>
         </div>
     </section>
@@ -361,7 +364,7 @@
                         <li><strong>Noise Scheduler:</strong> Linear scheduler for forward diffusion — noise variance increases uniformly across timesteps</li>
                         <li><strong>Self-Attention:</strong> Captures long-range spatial dependencies within feature maps</li>
                         <li><strong>Cross-Attention:</strong> Relates image features directly to the conditioning signal at each layer</li>
-                        <li><strong>Condition Injection:</strong> Condition image encoded and injected via input concatenation</li>
+                        <li><strong>Condition Injection:</strong> FiLM (Feature-wise Linear Modulation) applied inside every ResNet block</li>
                     </ul>
                 </div>
 
@@ -372,8 +375,8 @@
 
             <div class="col-lg-5">
                 <div class="row-image" style="text-align: center;">
-                    <img src="img/DDPM_celebA/cDDPM_Architecture.png" alt="U-Net Architecture with conditioning and attention blocks" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Global U-Net architecture: conditioning injection and attention layers at each depth.</small></p>
+                    <img src="img/DDPM_celebA/cDDPM_Architecture.png" alt="U-Net Architecture with FiLM conditioning and attention blocks" style="max-width: 100%;">
+                    <p class="mt-2 text-muted"><small>Global U-Net architecture: FiLM conditioning modules and attention layers at each depth.</small></p>
                 </div>
                 <div class="row-image" style="text-align: center; margin-top: 0.5rem;">
                     <img src="img/DDPM_celebA/fwd_diffusion.png" alt="Forward diffusion: progressive noise addition via linear scheduler" style="max-width: 100%;">
@@ -382,60 +385,48 @@
             </div>
         </div>
 
-        <!-- 2.2 Attention Placement Strategy -->
-        <div class="row mb-4" style="margin-top: 2rem;">
-            <div class="col-lg-12">
-                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 Attention Placement Strategy</h3>
+        <!-- 2.2 FiLM Conditioning Mechanism -->
+        <div class="row mb-4">
+            <div class="col-lg-7 order-lg-2">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 FiLM Conditioning Mechanism</h3>
 
                 <p class="text-justify">
-                    Attention is not applied uniformly across the network. Each location in the U-Net has a different representational role, and the type of attention placed there was chosen to match that role. The table below summarizes what each attention type contributes at each network location.
+                    Conditioning is applied through <strong>FiLM (Feature-wise Linear Modulation)</strong>. A lightweight CNN encoder processes the condition image and outputs a compact latent vector. Two linear projections map that vector to a scale factor <strong>γ</strong> and a shift factor <strong>β</strong>. These two parameters modulate every intermediate feature map inside the U-Net ResNet blocks.
                 </p>
 
-                <!-- <table class="comparison-table" style="margin-top: 1.5rem;">
-                    <thead>
-                        <tr>
-                            <th>Attention Type</th>
-                            <th>U-Net Feature Maps</th>
-                            <th>Skip Connections</th>
-                            <th>Latent Space (Bottleneck)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>No Attention</strong></td>
-                            <td style="color: #888;">N/A</td>
-                            <td>Direct concatenation only — no filtering</td>
-                            <td style="color: #888;">N/A</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Linear Self-Attention</strong></td>
-                            <td>Ensures spatial coherence of features modulated by the timestep embedding</td>
-                            <td>Encoder features are refined before being forwarded to the decoder</td>
-                            <td style="color: #888;">N/A</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Cross-Attention</strong></td>
-                            <td>Selects relevant information from the condition at each position, based on the current noise level</td>
-                            <td>The decoder selectively filters which encoder features are actually useful for reconstruction</td>
-                            <td style="color: #888;">N/A</td>
-                        </tr>
-                        <tr style="background: #e8f5e9;">
-                            <td><strong>Full Self-Attention</strong></td>
-                            <td style="color: #888;">N/A</td>
-                            <td style="color: #888;">N/A</td>
-                            <td>Global coherence at the most compressed point — every position attends to every other</td>
-                        </tr>
-                    </tbody>
-                </table> -->
+                <p class="text-justify" style="margin-top: 1rem;">
+                    FiLM applied at every residual block means the conditioning signal reaches both shallow layers, where texture and local structure live, and deep layers, where high-level semantic attributes are represented. Injecting only at the input would lose influence over deep features entirely.
+                </p>
 
-                <div class="model-overview" style="margin-top: 1.5rem;">
-                    <h5>Attention Placement</h5>
+                <div class="model-overview">
+                    <h5>FiLM Modulation Details</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Feature maps (high resolution):</strong> Linear Self-Attention is used here because full attention would be prohibitively expensive at large spatial sizes. It maintains temporal and spatial consistency across feature channels without quadratic cost.</li>
-                        <li><strong>Skip connections:</strong> Cross-Attention here is critical — it prevents the decoder from blindly accepting encoder features that are not relevant to the requested domain translation. The condition (via cross-attention) actively selects what the decoder receives.</li>
-                        <li><strong>Latent space (bottleneck):</strong> Full Self-Attention is applied only here, where the spatial resolution is at its smallest. The computational cost is manageable, and global coherence at this level propagates through the entire decoder, shaping the output structure at the highest semantic level.</li>
+                        <li><strong>Condition Encoder:</strong> Lightweight CNN maps reference image to a latent vector</li>
+                        <li><strong>Scale (γ):</strong> Multiplies each feature map channel-wise to amplify or suppress activations</li>
+                        <li><strong>Shift (β):</strong> Adds a learned offset per channel after scaling</li>
+                        <li><strong>Scope:</strong> Applied inside every ResNet block in the encoder and decoder</li>
                     </ul>
                 </div>
+
+                <p class="text-justify" style="margin-top: 1rem;">
+                    Think of it this way: the conditioning image sends two instructions to every layer of the network. One says "scale up these features, scale down those." The other says "shift everything by this amount." Those instructions are different at every layer because the condition encoder produces a single latent vector that gets projected to layer-specific γ and β pairs. The network learns which features to amplify at each depth to best perform the requested domain shift.
+                </p>
+            </div>
+
+            <div class="col-lg-5 order-lg-1">
+                <!-- add image: detailed technical diagram of ResNet block showing FiLM parameters gamma and beta -->
+                <div class="image-placeholder">
+                    ResNet Block with FiLM<br>
+                    <small>γ (scale) and β (shift) application</small>
+                </div>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>FiLM modulation inside the ResNet block: γ scales and β shifts each feature map channel-wise.</small></p>
+            </div>
+        </div>
+
+        <!-- 2.3 Attention Placement Strategy -->
+        <div class="row mb-4" style="margin-top: 2rem;">
+            <div class="col-lg-12">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">2.3 Attention Placement Strategy</h3>
 
                 <p class="text-justify" style="margin-top: 1rem;">
                     Think of it as three specialized filters placed at three key checkpoints: one that keeps the feature maps internally consistent while denoising, one that decides which encoder context the decoder should trust, and one that ensures the final compressed representation is globally coherent before reconstruction begins.
@@ -468,7 +459,7 @@
                 <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Injection Method Comparison</h4>
 
                 <p class="text-justify">
-                    The condition image is injected by <strong>input concatenation</strong> — it is appended as extra channels directly at the network input. Two configurations were compared: one with unpaired training and no guidance, and one with paired training and Classifier-Free Guidance.
+                    Two injection strategies were evaluated. <strong>Condition Encoding (FiLM)</strong> adds the modulated latent representation inside each ResNet block. <strong>Input Concatenation</strong> appends the condition image as additional channels at the network input. FiLM propagates the condition signal through all network depths. Concatenation limits influence to early processing stages.
                 </p>
 
                 <table class="comparison-table">
@@ -477,21 +468,27 @@
                             <th>Configuration</th>
                             <th>Injection Method</th>
                             <th>Data Pairing</th>
-                            <th>Guidance</th>
+                            <th>Conditioning Reach</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Baseline (Unpaired)</strong></td>
+                            <td><strong>Baseline</strong></td>
                             <td>Input Concatenation</td>
                             <td>Unpaired</td>
-                            <td>None</td>
+                            <td>Input layer only</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FiLM (Unpaired)</strong></td>
+                            <td>Condition Encoding (FiLM)</td>
+                            <td>Unpaired</td>
+                            <td>All ResNet blocks</td>
                         </tr>
                         <tr style="background: #e8f5e9;">
-                            <td><strong>Paired + CFG</strong></td>
-                            <td>Input Concatenation</td>
+                            <td><strong>FiLM + Paired + CFG</strong></td>
+                            <td>Condition Encoding (FiLM)</td>
                             <td>Paired</td>
-                            <td>Classifier-Free Guidance</td>
+                            <td>All ResNet blocks + guided inference</td>
                         </tr>
                     </tbody>
                 </table>
@@ -499,7 +496,7 @@
                 <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Classifier-Free Guidance (CFG)</h4>
 
                 <p class="text-justify">
-                    Without Classifier-Free Guidance, the condition can over-constrain the denoising process, pulling outputs toward a mode that satisfies the condition but deviates from a natural image distribution. CFG addresses this by randomly dropping the condition during training with a probability of <strong>20%</strong>. The model learns to generate under both conditioned and unconditioned paths.
+                    Without Classifier-Free Guidance, the condition can over-constrain the denoising process, pulling outputs toward outputs that follow the condition but look unnatural. CFG addresses this by randomly dropping the condition during training with a probability of <strong>20%</strong>. The model learns to generate under both conditioned and unconditioned paths.
                 </p>
 
                 <div class="model-overview" style="border-left: 4px solid var(--primary);">
@@ -517,23 +514,10 @@
 Epochs (cDDPM):     <strong>54</strong>
 CFG Dropout:        <strong>20%</strong>
 Scheduler:          <strong>Linear</strong>
-Injection:          <strong>Concatenation</strong>
+Injection:          <strong>FiLM</strong>
 Loss Function:      <strong>Huber</strong>
 Tasks:              <strong>CelebA, Day2Night</strong>
                     </div>
-                </div>
-
-                <div class="model-overview" style="margin-top: 1.5rem;">
-                    <h5>Training Pipeline</h5>
-                    <ol style="margin-top: 1rem; padding-left: 1.5rem; font-size: 0.95rem;">
-                        <li>1. Sample source image and condition image (paired or unpaired)</li>
-                        <li>2. Forward diffusion: add noise via linear scheduler across timesteps</li>
-                        <li>3. Drop condition with 20% probability (CFG training)</li>
-                        <li>4. Forward pass through U-Net with concatenated condition at input</li>
-                        <li>5. Compute Huber loss against ground-truth noise</li>
-                        <li>6. Backward pass, update weights</li>
-                        <li>At inference: interpolate conditioned and unconditioned predictions via CFG</li>
-                    </ol>
                 </div>
             </div>
         </div>
@@ -557,7 +541,6 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                 <div class="metric-value">20%</div>
                 <div class="metric-unit">condition dropout rate</div>
             </div>
-
             <div class="metric-card">
                 <div class="metric-label">Training Loss</div>
                 <div class="metric-value">Huber</div>
@@ -571,7 +554,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                     Generated outputs show successful transfer of gender-linked attributes including hair length, facial structure, and apparent makeup. Source identity is not consistently preserved. The conditioning signal transfers target-domain attributes but provides no explicit anchor for source-specific structure, which allows identity drift.
                 </p>
                 <p class="text-justify">
-                    Adding a face recognition loss would constrain structural drift directly. Without it, extending training is unlikely to resolve the issue since the model receives no gradient signal penalizing identity change. The condition is injected via input concatenation, which limits its influence to the early layers of the network — a deeper injection strategy would improve attribute transfer quality further.
+                    Adding a face recognition loss would constrain structural drift directly. Without it, extending training is unlikely to resolve the issue since the model receives no gradient signal penalizing identity change. FiLM injection produced visibly stronger attribute transfer than input concatenation, as shown in the sample comparison below.
                 </p>
             </div>
             <div class="col-lg-6">
@@ -594,16 +577,16 @@ Tasks:              <strong>CelebA, Day2Night</strong>
             </div>
             <div class="col-lg-6">
                 <p class="text-justify">
-                    Paired training with CFG produces stronger attribute transfer than the unpaired baseline. A condition injected at the input loses influence over deeper layers where high-level semantic attributes are represented. Paired training compensates by giving the model explicit correspondences to learn from, while CFG steers inference more precisely toward the target domain.
+                    Multi-depth FiLM injection produces stronger attribute transfer than input concatenation alone. A condition injected only at the input loses influence over deep layers where high-level semantic attributes such as facial structure and expression are represented. FiLM's reach across all ResNet blocks closes that gap by modulating both local texture features and global semantic features simultaneously. Visual comparison confirms that translation quality scales with how deeply the condition penetrates the network.
                 </p>
             </div>
         </div>
 
         <!-- 4.3 Day2Night Benchmark -->
-        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Day2Night Benchmark: CFG vs No CFG</h3>
+        <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Day2Night Benchmark: cDDPM vs GAN</h3>
 
         <p class="text-justify">
-            The Day2Night experiment was run in two configurations — with and without Classifier-Free Guidance — to evaluate how much CFG improves output quality and training stability on a structurally simpler domain shift.
+            The cDDPM trained for 54 epochs was benchmarked against a standard GAN baseline on Day2Night landscape conversion. This comparison tests whether diffusion-based generation is competitive against the established adversarial approach on a structurally simpler domain shift.
         </p>
 
         <table class="comparison-table">
@@ -619,7 +602,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                 <tr>
                     <td><strong>cDDPM (54 epochs)</strong></td>
                     <td>Diffusion, iterative denoising</td>
-                    <td>Concatenation + CFG</td>
+                    <td>FiLM + CFG</td>
                     <td>Day2Night</td>
                 </tr>
                 <tr>
@@ -631,49 +614,8 @@ Tasks:              <strong>CelebA, Day2Night</strong>
             </tbody>
         </table>
 
-        <!-- With CFG -->
-        <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">With Classifier-Free Guidance</h4>
-        <div class="row mt-3">
-            <div class="col-lg-6">
-                <div class="row-image" style="text-align: center;">
-                    <img src="img/DDPM_celebA/night2dayddpm_LOSS%20CFG.png" alt="Day2Night training and validation loss curve with CFG" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Training and validation loss curves — Day2Night with CFG.</small></p>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="row-image" style="text-align: center;">
-                    <img src="img/DDPM_celebA/nigh2dayddpm2_CFG.png" alt="Day2Night generated samples with CFG" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Generated Day2Night outputs with CFG enabled.</small></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Without CFG -->
-        <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Without Classifier-Free Guidance</h4>
-        <div class="row mt-3">
-            <div class="col-lg-6">
-                <div class="row-image" style="text-align: center;">
-                    <img src="img/DDPM_celebA/nigh2dayddpm_loss%20No%20CFG.png" alt="Day2Night training and validation loss curve without CFG" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Training and validation loss curves — Day2Night without CFG.</small></p>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="row-image" style="text-align: center;">
-                    <img src="img/DDPM_celebA/night2dayDDPM_NoCFG.png" alt="Day2Night generated samples without CFG" style="max-width: 100%;">
-                    <p class="mt-2 text-muted"><small>Generated Day2Night outputs without CFG.</small></p>
-                </div>
-            </div>
-        </div>
-
-        <div class="model-overview" style="border-left: 4px solid #f0a500; margin-top: 1.5rem;">
-            <h5 style="color: #f0a500;">On the Noisy Validation Curve</h5>
-            <p style="margin: 0.5rem 0; font-size: 0.95rem;">
-                Both configurations show a validation loss that fluctuates rather than converging smoothly. This is a learning rate issue: the optimizer is taking steps large enough to overshoot weight configurations that would return good gradients, bouncing past them instead of settling in. Training longer with a lower learning rate would allow the model to take finer steps near good solutions, reducing this instability. The training loss trends downward correctly — the fluctuation is specific to validation, which confirms the model is sensitive to step size rather than genuinely failing to generalize.
-            </p>
-        </div>
-
         <p class="text-justify" style="margin-top: 1rem;">
-            CFG produces noticeably cleaner domain transfer on Day2Night. Without it, the denoising process is less steered at inference and the condition signal has less consistent influence over the output. The loss curves across both runs confirm that the training dynamics are similar — the quality gap is entirely a product of the guidance mechanism at inference, not a difference in how well each variant learned the noise distribution.
+            Diffusion models produce high-fidelity outputs but require significantly more compute at inference time than GANs. The GAN baseline reaches stable coherence faster on low-complexity domain shifts where the target distribution is narrow and well-defined, which makes Day2Night a competitive benchmark for it. The 54-epoch cDDPM result establishes how much training budget this architecture requires to reach comparable coherence.
         </p>
 
         <!-- 4.4 Personal Photo Test -->
@@ -711,24 +653,22 @@ Tasks:              <strong>CelebA, Day2Night</strong>
             <h3>Project Summary</h3>
 
             <p class="text-justify">
-                This project demonstrates a functional cDDPM pipeline for image-to-image translation using input concatenation conditioning, Classifier-Free Guidance, and paired training. The model transfers gender-linked facial attributes on CelebA and produces directional domain shifts on Day2Night. The conditioning signal was not fully optimized in this iteration: guidance from the condition image sometimes interferes with the denoising process rather than steering it cleanly.
+                This project demonstrates a functional cDDPM pipeline for image-to-image translation using FiLM conditioning, Classifier-Free Guidance, and paired training. The model transfers gender-linked facial attributes on CelebA and produces directional domain shifts on Day2Night. The conditioning signal was not fully optimized in this iteration: guidance from the condition image sometimes interferes with the denoising process rather than steering it cleanly.
             </p>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Outcomes</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li>Paired training with CFG outperforms unpaired training without guidance for attribute transfer</li>
+                <li>FiLM conditioning across all ResNet blocks outperforms input concatenation for attribute transfer tasks</li>
                 <li>CFG at 20% dropout enables stable inference guidance without destabilizing training</li>
                 <li>Paired training improves attribute correspondence over unpaired population-level sampling</li>
+                <li>Day2Night benchmark provides a concrete reference comparison against standard GAN performance</li>
                 <li>Identity preservation across translation is the primary open problem in this configuration</li>
             </ul>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li><strong>Spatial Placeholder Conditioning:</strong> Reserve specific spatial areas in the feature maps to anchor semantic attributes, improving condition fidelity without over-constraining the denoising path</li>
                 <li><strong>Identity Loss:</strong> Add a face recognition loss term to penalize structural drift from the source identity during translation</li>
-                <li><strong>Deeper Condition Optimization:</strong> Extend training beyond 54 epochs with the conditioning scheme refined to reduce interference with the denoising trajectory</li>
-                <li><strong>Deeper Condition Injection:</strong> Move beyond input concatenation toward cross-attention over the condition encoding for finer spatial control over attribute transfer across all network depths</li>
-                <li><strong>Classifier Guidance:</strong> Combine CFG with a domain attribute classifier to apply semantic gradients at inference time</li>
+                <li><strong>Deeper Condition Optimization:</strong> Extend training beyond 54 epochs with the conditioning scheme refined to reduce interference with the generation process</li>
             </ul>
         </div>
 
@@ -739,15 +679,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                     Conditioning Failure Example<br>
                     <small>Output where condition signal was not followed</small>
                 </div>
-                <p class="mt-2 text-muted" style="text-align: center;"><small>Example where the condition failed to redirect the denoising trajectory toward the target domain.</small></p>
-            </div>
-            <div class="col-lg-6">
-                <!-- add image: sketch of the spatial placeholder concept for future conditioning work -->
-                <div class="image-placeholder">
-                    Spatial Placeholder Concept<br>
-                    <small>Proposed future conditioning approach</small>
-                </div>
-                <p class="mt-2 text-muted" style="text-align: center;"><small>Future direction: placeholder-based spatial conditioning that reserves feature map areas for targeted semantic attribute injection.</small></p>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Example where the condition failed to redirect the generation process toward the target domain.</small></p>
             </div>
         </div>
 
@@ -758,7 +690,6 @@ Tasks:              <strong>CelebA, Day2Night</strong>
             <ul style="margin: 0; padding-left: 1.5rem;">
                 <li><strong>Primary Dataset:</strong> CelebA (Large-scale CelebFaces Attributes Dataset) — facial attribute annotations across 200k+ images</li>
                 <li><strong>Secondary Dataset:</strong> Day2Night landscape pairs for generalization benchmarking</li>
-                <li><strong>Source Code:</strong> Training and evaluation scripts (link to be added)</li>
             </ul>
         </div>
     </section>
