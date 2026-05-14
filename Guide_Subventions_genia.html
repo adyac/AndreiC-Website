@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide des Subventions Gouvernementales — genia.co</title>
+<style>
+
+/* ─── RESET & BASE ──────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Calibri, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10.5pt;
+  color: #1a1a2e;
+  background: #fff;
+  line-height: 1.65;
+  position: relative;
+}
+
+/* ─── HEX BACKGROUND ────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; right: 0;
+  width: 100%; height: 55%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V17L28 1l28 16v33L28 66zM28 68l-30 17v2l30-17 30 17v-2L28 68z' fill='none' stroke='%2310288C' stroke-width='1.2'/%3E%3C/svg%3E");
+  background-size: 80px 142px;
+  opacity: 0.045;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ─── PAGE WRAPPER ──────────────────────────────── */
+.page {
+  max-width: 794px;
+  margin: 0 auto;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── HEADER ────────────────────────────────────── */
+.header {
+  background: linear-gradient(135deg, #10288C 0%, #2a4fc7 55%, #4F7DFA 100%);
+  padding: 40px 52px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #4F7DFA, #CBE2FE, #4F7DFA);
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.header-left {}
+
+.brand {
+  font-size: 13pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.doc-title {
+  font-size: 24pt;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.doc-subtitle {
+  font-size: 11pt;
+  color: rgba(203, 226, 254, 0.9);
+  font-weight: 300;
+}
+
+.header-right {
+  text-align: right;
+}
+
+.header-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #CBE2FE;
+  font-size: 8.5pt;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.header-date {
+  font-size: 9pt;
+  color: rgba(255,255,255,0.5);
+  display: block;
+  margin-top: 8px;
+}
+
+/* ─── CONTENT AREA ──────────────────────────────── */
+.content {
+  padding: 36px 52px 48px;
+}
+
+/* ─── INTRO BOX ─────────────────────────────────── */
+.intro-box {
+  background: linear-gradient(135deg, #EEF4FF, #F5F9FF);
+  border-left: 4px solid #4F7DFA;
+  border-radius: 0 10px 10px 0;
+  padding: 18px 24px;
+  margin-bottom: 36px;
+  color: #2d3a6b;
+  font-size: 10.5pt;
+  line-height: 1.7;
+}
+
+.intro-box strong {
+  color: #10288C;
+}
+
+/* ─── SECTION HEADING (CV-style) ─────────────────── */
+.section-heading {
+  font-size: 15pt;
+  font-weight: 800;
+  color: #10288C;
+  border-bottom: 2.5px solid #4F7DFA;
+  padding-bottom: 7px;
+  margin: 38px 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-heading .section-tag {
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: #4F7DFA;
+  background: #EEF4FF;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* ─── PROGRAM CARD ──────────────────────────────── */
+.program-card {
+  background: #fff;
+  border: 1px solid #dde9fd;
+  border-radius: 12px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(79,125,250,0.07);
+  page-break-inside: avoid;
+}
+
+.program-header {
+  background: linear-gradient(90deg, #10288C 0%, #1f3daa 100%);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.program-name {
+  font-size: 13pt;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.program-link {
+  font-size: 8.5pt;
+  color: #CBE2FE;
+  font-weight: 400;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.badge-yes   { background: #d1fae5; color: #065f46; }
+.badge-maybe { background: #fef3c7; color: #92400e; }
+.badge-no    { background: #fee2e2; color: #991b1b; }
+
+/* ─── DETAIL TABLE ──────────────────────────────── */
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.detail-table tr {
+  border-bottom: 1px solid #e8f0fe;
+}
+
+.detail-table tr:last-child {
+  border-bottom: none;
+}
+
+.detail-table td {
+  padding: 13px 20px;
+  font-size: 10pt;
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.detail-table td.lbl {
+  width: 130px;
+  font-weight: 700;
+  font-size: 9pt;
+  color: #10288C;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background: #f4f8ff;
+  border-right: 1px solid #dde9fd;
+  white-space: nowrap;
+}
+
+.detail-table td.val {
+  color: #2d3a6b;
+}
+
+.detail-table td.val a {
+  color: #4F7DFA;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.detail-table tr:nth-child(even) td.val {
+  background: #fafcff;
+}
+
+.step-list {
+  margin: 4px 0 0 0;
+  padding-left: 0;
+  list-style: none;
+  counter-reset: steps;
+}
+
+.step-list li {
+  counter-increment: steps;
+  padding: 2px 0 2px 28px;
+  position: relative;
+  font-size: 10pt;
+  color: #2d3a6b;
+}
+
+.step-list li::before {
+  content: counter(steps);
+  position: absolute;
+  left: 0;
+  width: 20px; height: 20px;
+  background: #4F7DFA;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 8pt;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 3px;
+}
+
+/* ─── COMPARISON TABLE ──────────────────────────── */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 9.5pt;
+}
+
+.comparison-table thead tr {
+  background: #10288C;
+}
+
+.comparison-table thead th {
+  padding: 12px 14px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 9pt;
+  text-align: left;
+  letter-spacing: 0.4px;
+}
+
+.comparison-table thead th:first-child { border-radius: 8px 0 0 0; }
+.comparison-table thead th:last-child  { border-radius: 0 8px 0 0; }
+
+.comparison-table tbody tr:nth-child(odd)  { background: #f4f8ff; }
+.comparison-table tbody tr:nth-child(even) { background: #fff; }
+
+.comparison-table tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid #e8f0fe;
+  color: #2d3a6b;
+  vertical-align: middle;
+}
+
+.comparison-table tbody td:first-child {
+  font-weight: 700;
+  color: #10288C;
+}
+
+.tag-yes   { color: #065f46; font-weight: 700; }
+.tag-maybe { color: #92400e; font-weight: 700; }
+
+/* ─── NOTES BOX ─────────────────────────────────── */
+.notes-box {
+  background: #EEF4FF;
+  border: 1px solid #CBE2FE;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-top: 36px;
+}
+
+.notes-box h4 {
+  color: #10288C;
+  font-size: 11pt;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.notes-list {
+  padding-left: 0;
+  list-style: none;
+  margin: 0;
+}
+
+.notes-list li {
+  padding: 4px 0 4px 20px;
+  position: relative;
+  color: #2d3a6b;
+  font-size: 10pt;
+}
+
+.notes-list li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: #4F7DFA;
+  font-weight: 700;
+}
+
+/* ─── FOOTER ────────────────────────────────────── */
+.footer {
+  border-top: 2px solid #CBE2FE;
+  padding: 18px 52px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fbff;
+}
+
+.footer-brand {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #4F7DFA;
+  letter-spacing: 1px;
+}
+
+.footer-center {
+  font-size: 9pt;
+  color: #8ca0c8;
+  text-align: center;
+}
+
+.footer-date {
+  font-size: 9pt;
+  color: #8ca0c8;
+  text-align: right;
+}
+
+.divider {
+  height: 3px;
+  background: linear-gradient(90deg, #10288C, #4F7DFA, #CBE2FE);
+  border-radius: 3px;
+  margin: 0 0 8px 0;
+}
+
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="brand">genia.co</div>
+        <div class="doc-title">Guide des Subventions<br>Gouvernementales</div>
+        <div class="doc-subtitle">Programmes de financement pour stages &amp; R&amp;D — Québec 2026</div>
+      </div>
+      <div class="header-right">
+        <div class="header-badge">⬡ Compagnie Marketing</div>
+        <div class="header-date">Préparé le 12 mai 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CONTENT ═══════════ -->
+  <div class="content">
+
+    <!-- INTRO -->
+    <div class="intro-box">
+      Ce document présente une analyse des <strong>5 programmes de subventions gouvernementales</strong> les plus pertinents pour genia.co.<br><br>
+      Pour chaque programme : applicabilité, procédure d'application, lien officiel, résumé financier et durée.<br><br>
+      <strong>Objectif :</strong> maximiser le financement de stage et d'innovation pour votre entreprise marketing.
+    </div>
+
+    <!-- ── PROGRAMME 1 : FESTQ ── -->
+    <div class="section-heading">
+      01 — FESTQ
+      <span class="section-tag">Fonds Étudiant</span>
+    </div>
+
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-name">FESTQ — Fonds Étudiant du Québec</div>
+        <span class="badge badge-yes">✓ Applicable</span>
+      </div>
+      <table class="detail-table">
+        <tr>
+          <td class="lbl">Applicabilité</td>
+          <td class="val">
+            <strong>OUI</strong> — Applicable pour toute compagnie, incluant marketing. Le programme cible le recrutement d'étudiants de niveau collégial ou universitaire pendant l'été. genia.co est éligible en tant que PME du secteur privé.
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Procédure</td>
+          <td class="val">
+            <ol class="step-list">
+              <li>Consulter <a href="https://fondsetudiant.com/volet-educatif/">fondsetudiant.com/volet-educatif/</a> pour vérifier les critères</li>
+              <li>Créer un compte employeur sur la plateforme FESTQ</li>
+              <li>Soumettre la candidature employeur <strong>avant le 1er mai</strong></li>
+              <li>Signer l'entente de subvention avec FESTQ</li>
+              <li>Embaucher le stagiaire entre le 1er mai et le 31 août</li>
+            </ol>
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Lien Officiel</td>
+          <td class="val"><a href="https://fondsetudiant.com/volet-educatif/">https://fondsetudiant.com/volet-educatif/</a></td>
+        </tr>
+        <tr>
+          <td class="lbl">Résumé</td>
+          <td class="val">
+            Remboursement jusqu'à <strong>90% du salaire brut</strong> du stagiaire. Postes de coordination : 100% du salaire + 4% vacances remboursés. Max 40h/semaine. Charges sociales (CNESST, RRQ, assurance-emploi) à la charge de l'employeur. Inclut une composante éducative obligatoire (ateliers, formations).
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Maximum</td>
+          <td class="val"><strong>~10 000 $ CAD</strong> — 90% du salaire brut sur 16 semaines à salaire minimum (~17,20 $/h × 40h). Aucun plafond fixe déclaré par FESTQ.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Délai d'obtention</td>
+          <td class="val"><strong>2 à 4 semaines</strong> après soumission de la demande employeur et approbation de l'entente.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Durée</td>
+          <td class="val"><strong>12 à 16 semaines</strong> — Période admissible : 1er mai au 31 août</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ── PROGRAMME 2 : MITACS ── -->
+    <div class="section-heading">
+      02 — Mitacs Accélération
+      <span class="section-tag">Subvention R&amp;D</span>
+    </div>
+
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-name">Mitacs Accélération — Programme R&amp;D Canada</div>
+        <span class="badge badge-yes">✓ Applicable (si R&amp;D)</span>
+      </div>
+      <table class="detail-table">
+        <tr>
+          <td class="lbl">Applicabilité</td>
+          <td class="val">
+            <strong>OUI</strong> — Applicable si genia.co définit un projet de R&amp;D (ex: analytique marketing avancée, automatisation IA, développement d'outil ou de stratégie innovante). Nécessite un partenariat avec une université canadienne.
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Procédure</td>
+          <td class="val">
+            <ol class="step-list">
+              <li>Identifier un professeur ou chercheur partenaire dans une université canadienne</li>
+              <li>Définir un projet de recherche concret lié aux besoins de genia.co</li>
+              <li>Préparer la contribution financière : <strong>7 500 $ CAD minimum</strong> de l'entreprise</li>
+              <li>Soumettre la demande conjointe sur <a href="https://www.mitacs.ca/en/programs/accelerate">mitacs.ca</a></li>
+              <li>Recruter le stagiaire universitaire après approbation</li>
+            </ol>
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Lien Officiel</td>
+          <td class="val"><a href="https://www.mitacs.ca/en/programs/accelerate">https://www.mitacs.ca/en/programs/accelerate</a></td>
+        </tr>
+        <tr>
+          <td class="lbl">Résumé</td>
+          <td class="val">
+            Subvention de <strong>15 000 $ CAD par unité de stage</strong> (4–6 mois). L'entreprise fournit 7 500 $, Mitacs en verse 7 500 $. Min. 10 000 $ versé au stagiaire en allocation. Frais de recherche supplémentaires admissibles jusqu'à 5 000 $. Projet peut être renouvelé (plusieurs unités).
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Maximum</td>
+          <td class="val"><strong>7 500 $ CAD par unité</strong> (contribution Mitacs). Projets multi-phases renouvelables : potentiellement <strong>22 500 $+</strong> sur plusieurs unités consécutives.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Délai d'obtention</td>
+          <td class="val"><strong>6 à 12 semaines</strong> — révision académique + approbation conjointe université et Mitacs requise.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Durée</td>
+          <td class="val"><strong>4 à 6 mois par unité</strong> — Renouvellements possibles pour projets multi-phases</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ── PROGRAMME 3 : EMPLOIS ÉTÉ CANADA ── -->
+    <div class="section-heading">
+      03 — Emplois d'été Canada
+      <span class="section-tag">Fédéral</span>
+    </div>
+
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-name">Emplois d'été Canada — EDSC</div>
+        <span class="badge badge-maybe">⚠ Limité (≤50 employés)</span>
+      </div>
+      <table class="detail-table">
+        <tr>
+          <td class="lbl">Applicabilité</td>
+          <td class="val">
+            <strong>LIMITÉ</strong> — Applicable uniquement si genia.co compte <strong>50 employés à temps plein ou moins</strong> (secteur privé). Remboursement limité à 50% du salaire minimum. Pleinement applicable si genia.co est un OBNL (100% dans ce cas).
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Procédure</td>
+          <td class="val">
+            <ol class="step-list">
+              <li>Vérifier l'admissibilité : ≤50 employés à temps plein</li>
+              <li>Créer un compte employeur sur <a href="https://www.canada.ca/fr/emploi-developpement-social/services/financement/emplois-ete-canada.html">canada.ca</a></li>
+              <li>Soumettre la demande annuelle (fenêtre : septembre–mars)</li>
+              <li>Obtenir approbation et créer l'offre d'emploi sur Guichet-Emplois</li>
+              <li>Embaucher un jeune de 15–30 ans pour la période d'été</li>
+            </ol>
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Lien Officiel</td>
+          <td class="val"><a href="https://www.canada.ca/fr/emploi-developpement-social/services/financement/emplois-ete-canada.html">https://www.canada.ca — Emplois d'été Canada</a></td>
+        </tr>
+        <tr>
+          <td class="lbl">Résumé</td>
+          <td class="val">
+            Subvention salariale de <strong>50% du salaire minimum</strong> provincial (secteur privé). Emplois à temps plein : 30–40h/semaine. Cible les jeunes de 15 à 30 ans. Priorité aux candidats sous-représentés (jeunes handicapés, racisés, autochtones, etc.). Pour 2026 : plus de 100 000 postes disponibles à l'échelle nationale.
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Maximum</td>
+          <td class="val"><strong>~5 500 $ CAD</strong> — 50% du salaire minimum (~17,20 $/h) × 40h × 16 semaines. OBNL uniquement : jusqu'à 100% du salaire minimum.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Délai d'obtention</td>
+          <td class="val"><strong>4 à 8 semaines</strong> après fermeture de la fenêtre de demande (mars–avril 2026). Résultats annoncés en avril.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Durée</td>
+          <td class="val"><strong>6 à 16 semaines</strong> — Moyenne : 8 semaines (mi-avril à fin août 2026)</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ── PROGRAMME 4 : FCCQ ── -->
+    <div class="section-heading">
+      04 — FCCQ
+      <span class="section-tag">Chambre de commerce</span>
+    </div>
+
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-name">FCCQ — Fédération des Chambres de Commerce du Québec</div>
+        <span class="badge badge-yes">✓ Applicable</span>
+      </div>
+      <table class="detail-table">
+        <tr>
+          <td class="lbl">Applicabilité</td>
+          <td class="val">
+            <strong>OUI</strong> — Via les programmes <em>Accueillez un stagiaire</em> et <em>Jeunesse Canada au travail</em>. La FCCQ agit comme intermédiaire entre genia.co et les programmes fédéraux/provinciaux, augmentant les chances d'approbation.
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Procédure</td>
+          <td class="val">
+            <ol class="step-list">
+              <li>Contacter la chambre de commerce locale ou la FCCQ directement</li>
+              <li>Identifier le programme le plus adapté : <em>Accueil stagiaires</em>, <em>Jeunesse Canada au travail</em>, ou <em>Visées</em></li>
+              <li>Préparer le dossier de demande avec l'aide-conseil de la FCCQ</li>
+              <li>Soumettre la demande à l'organisme gouvernemental concerné</li>
+              <li>Recevoir la subvention et embaucher ou former l'employé</li>
+            </ol>
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Lien Officiel</td>
+          <td class="val"><a href="https://www.fccq.ca/">https://www.fccq.ca/</a></td>
+        </tr>
+        <tr>
+          <td class="lbl">Résumé</td>
+          <td class="val">
+            Plusieurs programmes accessibles : <strong>Jeunesse Canada au travail</strong> (jusqu'à 70% du salaire, Heritage Canada), <strong>Accueil stagiaires</strong> (subventions gouvernementales pour stages collégiaux/universitaires), <strong>Visées</strong> (formation certifiée et subventionnée pour employés). La FCCQ offre un service-conseil pour optimiser et structurer les dossiers.
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Maximum</td>
+          <td class="val"><strong>Jusqu'à 70% du salaire</strong> via Jeunesse Canada au travail (Heritage Canada). Montant variable selon le programme retenu avec la chambre locale.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Délai d'obtention</td>
+          <td class="val"><strong>4 à 10 semaines</strong> — variable selon le programme et l'organisme gouvernemental partenaire. La FCCQ accompagne tout le processus.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Durée</td>
+          <td class="val"><strong>Variable selon programme</strong> — Stages : 4–26 semaines | Formations : courts modules certifiés</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ── PROGRAMME 5 : FONDSETUDIANT.COM ── -->
+    <div class="section-heading">
+      05 — fondsetudiant.com
+      <span class="section-tag">Portail Québécois</span>
+    </div>
+
+    <div class="program-card">
+      <div class="program-header">
+        <div class="program-name">fondsetudiant.com — Portail centralisé de financement</div>
+        <span class="badge badge-yes">✓ Applicable</span>
+      </div>
+      <table class="detail-table">
+        <tr>
+          <td class="lbl">Applicabilité</td>
+          <td class="val">
+            <strong>OUI</strong> — Portail d'accès centralisé regroupant FESTQ et d'autres bourses québécoises. Permet à genia.co de trouver et de soumettre des demandes à plusieurs programmes simultanément, incluant le volet employeur pour les stages.
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Procédure</td>
+          <td class="val">
+            <ol class="step-list">
+              <li>Visiter <a href="https://fondsetudiant.com/financement/">fondsetudiant.com/financement/</a></li>
+              <li>Explorer les programmes disponibles (volet employeur et volet étudiant)</li>
+              <li>Créer un profil employeur sur la plateforme</li>
+              <li>Soumettre les candidatures selon les programmes retenus</li>
+              <li>Suivre le processus de sélection et matching avec les étudiants</li>
+            </ol>
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Lien Officiel</td>
+          <td class="val"><a href="https://fondsetudiant.com/financement/">https://fondsetudiant.com/financement/</a></td>
+        </tr>
+        <tr>
+          <td class="lbl">Résumé</td>
+          <td class="val">
+            Portail québécois intégrant principalement le programme <strong>FESTQ</strong> (remboursement 90% salaire) et d'autres bourses d'études additionnelles. Section volet éducatif : ateliers, formations pratiques pour les stagiaires. Base de données centralisée pour matchmaking employeur–étudiant. Idéal comme point d'entrée pour naviguer les options de financement.
+          </td>
+        </tr>
+        <tr>
+          <td class="lbl">Maximum</td>
+          <td class="val"><strong>~10 000 $ CAD</strong> — identique à FESTQ (portail d'accès centralisé). 90% du salaire brut pour stages admissibles de 16 semaines.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Délai d'obtention</td>
+          <td class="val"><strong>2 à 4 semaines</strong> — même processus que FESTQ via la plateforme fondsetudiant.com. Matching employeur–étudiant intégré.</td>
+        </tr>
+        <tr>
+          <td class="lbl">Durée</td>
+          <td class="val"><strong>Selon programme sélectionné</strong> — Principalement stages FESTQ (mai–août, 12–16 semaines)</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ══ TABLEAU COMPARATIF ══ -->
+    <div class="section-heading">
+      Vue d'ensemble comparative
+      <span class="section-tag">5 Programmes</span>
+    </div>
+
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Programme</th>
+          <th>Couverture Max</th>
+          <th>Durée</th>
+          <th>Applicable ?</th>
+          <th>Délai Clé</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FESTQ</td>
+          <td>Jusqu'à 90% du salaire</td>
+          <td>12–16 semaines</td>
+          <td><span class="tag-yes">✓ OUI</span></td>
+          <td>Avant 1er mai</td>
+        </tr>
+        <tr>
+          <td>Mitacs Accélération</td>
+          <td>15 000 $ CAD/stage</td>
+          <td>4–6 mois</td>
+          <td><span class="tag-yes">✓ OUI (R&amp;D)</span></td>
+          <td>Soumission continue</td>
+        </tr>
+        <tr>
+          <td>Emplois d'été Canada</td>
+          <td>50% salaire minimum</td>
+          <td>6–16 semaines</td>
+          <td><span class="tag-maybe">⚠ Si ≤50 empl.</span></td>
+          <td>Sept.–mars (demande)</td>
+        </tr>
+        <tr>
+          <td>FCCQ</td>
+          <td>Jusqu'à 70% (selon prog.)</td>
+          <td>Variable</td>
+          <td><span class="tag-yes">✓ OUI</span></td>
+          <td>Contacter chambre locale</td>
+        </tr>
+        <tr>
+          <td>fondsetudiant.com</td>
+          <td>Jusqu'à 90% (via FESTQ)</td>
+          <td>Selon programme</td>
+          <td><span class="tag-yes">✓ OUI</span></td>
+          <td>Avant 1er mai</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- NOTES -->
+    <div class="notes-box">
+      <h4>⚑ Notes importantes</h4>
+      <ul class="notes-list">
+        <li>Les montants et conditions présentés sont en vigueur pour <strong>2026</strong> — toujours vérifier directement auprès des organismes.</li>
+        <li>FESTQ et fondsetudiant.com sont deux portes d'entrée pour le même programme : privilégier <em>fondsetudiant.com</em> pour le matchmaking étudiant.</li>
+        <!-- STRATÉGIE FINANCIÈRE — masquée pour présentation client
+        <li><strong>Stratégie optimale :</strong> combiner FESTQ (stage d'été) + Mitacs (si projet R&amp;D défini) pour maximiser le financement.</li>
+        -->
+        <li>La FCCQ offre des services-conseils <em>gratuits</em> pour préparer les dossiers et augmenter les chances d'approbation.</li>
+        <li>Pour Emplois d'été Canada, la demande 2026 est déjà ouverte — période d'embauche : 20 avril au 20 juillet 2026.</li>
+      </ul>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <div class="footer">
+    <div class="footer-brand">genia.co</div>
+    <div class="footer-center">Guide des Subventions Gouvernementales — Québec 2026</div>
+    <div class="footer-date">12 mai 2026</div>
+  </div>
+
+</div><!-- /page -->
+
+</body>
+</html>
