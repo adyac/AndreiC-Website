@@ -526,7 +526,8 @@ body::before {
           <td class="val">
             <strong>~49% combiné</strong> sur les salaires R&amp;D admissibles :<br>
             — Fédéral (ARC) : <strong>35%</strong> remboursable pour les CCPC<br>
-            — Provincial (Revenu Québec) : <strong>14%</strong> additionnel
+            — Provincial (Revenu Québec) : <strong>14%</strong> additionnel<br>
+            <em>Exemple : sur 3 500 $ versés en consulting R&amp;D, votre compagnie récupère ~1 715 $ en crédits d'impôt. Coût net réel : ~1 785 $.</em>
           </td>
         </tr>
         <tr>
@@ -559,10 +560,9 @@ body::before {
         <div class="program-name">Qu'est-ce qui compte comme R&amp;D ? <br> Critères d'admissibilité RS&amp;DE</div>
         <span class="badge" style="background: rgba(255,255,255,0.15); color: #CBE2FE; font-weight: 600;">3 critères</span>
       </div>
-      <table class="detail-table" style="table-layout: fixed;">
-        <colgroup><col style="width: 25%"><col style="width: 75%"></colgroup>
+      <table class="detail-table">
         <tr>
-          <td class="lbl" style="white-space: normal; width: 25%; word-wrap: break-word;">1. Incertitude technologique</td>
+          <td class="lbl">1. Incertitude technologique</td>
           <td class="val">
             <strong>On ne sait pas comment faire au départ.</strong><br>
             Le résultat n'est pas prévisible avec les connaissances existantes — on ne peut pas simplement appliquer une solution connue. Il faut expérimenter, tester, itérer.<br><br>
@@ -571,7 +571,7 @@ body::before {
           </td>
         </tr>
         <tr>
-          <td class="lbl" style="white-space: normal; word-wrap: break-word;">2. Avancement technologique</td>
+          <td class="lbl">2. Avancement technologique</td>
           <td class="val">
             <strong>On essaie d'aller au-delà de ce qui existe.</strong><br>
             Le projet tente de créer quelque chose de nouveau ou d'améliorer significativement une solution existante face à un problème non-résolu. Pas besoin d'inventer une révolution — une amélioration technique ciblée suffit.<br><br>
@@ -580,7 +580,7 @@ body::before {
           </td>
         </tr>
         <tr>
-          <td class="lbl" style="white-space: normal; word-wrap: break-word;">3. Investigation systématique</td>
+          <td class="lbl">3. Investigation systématique</td>
           <td class="val">
             <strong>On a une démarche structurée.</strong><br>
             Hypothèses → expérimentation → analyse des résultats. Documentation des essais, des échecs, des itérations. Approche d'ingénierie, pas du trial-and-error aléatoire.<br><br>
@@ -589,7 +589,7 @@ body::before {
           </td>
         </tr>
         <tr>
-          <td class="lbl" style="white-space: normal; word-wrap: break-word;">Exemples qui qualifient</td>
+          <td class="lbl">Exemples qui qualifient</td>
           <td class="val">
             <ul style="margin: 4px 0 0 16px; color: #2d3a6b; line-height: 1.9;">
               <li>Développer un modèle ML custom pour un cas d'usage spécifique</li>
@@ -601,7 +601,7 @@ body::before {
           </td>
         </tr>
         <tr>
-          <td class="lbl" style="white-space: normal; word-wrap: break-word;">Exemples exclus</td>
+          <td class="lbl">Exemples exclus</td>
           <td class="val">
             <ul style="margin: 4px 0 0 16px; color: #6b7280; line-height: 1.9;">
               <li>Configuration de logiciels existants (SaaS, CRM, ERP)</li>
@@ -612,42 +612,42 @@ body::before {
           </td>
         </tr>
         <tr>
-          <td class="lbl" style="white-space: normal; word-wrap: break-word;">Claude + n8n + Zoho : R&amp;D ou pas ?</td>
+          <td class="lbl">Claude + n8n + Zoho — R&amp;D ou pas ?</td>
           <td class="val">
-            <strong>La réponse dépend de ce que tu fais avec ces outils, pas des outils eux-mêmes.</strong><br><br>
-            <span style="color: #991b1b; font-weight: 600;">✗ Intégration (pas R&amp;D) :</span> Assembler des outils existants de façon standard. Configurer un chatbot Claude dans Zoho, automatiser des followups, connecter une API à un workflow n8n. La solution existe déjà. Tu assemblés des blocs connus. Il n'y a pas d'incertitude technologique.<br><br>
-            <span style="color: #065f46; font-weight: 600;">✓ R&amp;D admissible :</span> Résoudre un problème technique que personne n'a résolu pour ton contexte précis.<br>
+            <strong>Ça dépend — la ligne est fine.</strong><br><br>
+            <span style="color: #991b1b; font-weight: 600;">✗ Intégration (pas R&amp;D) :</span> Brancher des outils existants de façon standard — configurer un chatbot Claude dans Zoho, automatiser des followups, connecter une API à un workflow. La solution existe déjà, tu assembles des blocs. Pas d'incertitude technologique.<br><br>
+            <span style="color: #065f46; font-weight: 600;">✓ R&amp;D admissible :</span> Quand tu te heurtes à un problème que personne n'a résolu pour ton contexte :<br>
             <ul style="margin: 6px 0 10px 16px; color: #2d3a6b; line-height: 1.9;">
-              <li>Les réponses du modèle hallucinent sur tes données produit. Tu dois développer un système RAG custom avec re-ranking et validation pour atteindre 95% de précision.</li>
-              <li>Le workflow standard ne tient pas au-dessus de 500 leads par jour. Tu conçois une architecture de queue asynchrone avec retry intelligent et monitoring.</li>
-              <li>Tu veux un agent IA qui prend des décisions autonomes sur le pipeline de vente. Ça n'existait pas pour ton cas. Tu dois expérimenter plusieurs architectures avant d'en valider une.</li>
+              <li>Les réponses hallucinent sur vos données produit — tu dois développer un RAG custom avec re-ranking et validation pour atteindre 95% de précision</li>
+              <li>Le workflow standard ne scale pas au-dessus de 500 leads/jour — tu conçois une architecture de queue asynchrone avec retry intelligent</li>
+              <li>Un agent IA multi-étapes prenant des décisions autonomes sur le pipeline de vente — ça n'existait pas, tu dois expérimenter plusieurs architectures</li>
             </ul>
             <strong>Test rapide en 3 questions :</strong>
             <table style="margin: 8px 0; border-collapse: collapse; width: 100%; font-size: 9.5pt;">
               <tr style="background: #f4f8ff;">
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #10288C; font-weight: 700; width: 55%;">J'ai eu des échecs et j'ai dû itérer ?</td>
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #065f46; font-weight: 700;">Oui : R&amp;D</td>
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #991b1b; font-weight: 700;">Non : j'ai suivi un tutoriel</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #10288C; font-weight: 700; width: 55%;">Est-ce que j'ai eu des échecs et j'ai dû itérer ?</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #065f46; font-weight: 700;">Oui → R&amp;D</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #991b1b; font-weight: 700;">Non → j'ai suivi un tuto</td>
               </tr>
               <tr>
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #10288C; font-weight: 700;">Quelqu'un pourrait reproduire ça en suivant une recette existante ?</td>
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #991b1b; font-weight: 700;">Oui : intégration</td>
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #065f46; font-weight: 700;">Non : j'ai créé la recette</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #10288C; font-weight: 700;">Quelqu'un pourrait refaire ça avec une recette existante ?</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #991b1b; font-weight: 700;">Oui → intégration</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #065f46; font-weight: 700;">Non → j'ai créé la recette</td>
               </tr>
               <tr style="background: #f4f8ff;">
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #10288C; font-weight: 700;">J'ai dû expérimenter pour savoir si ça allait fonctionner ?</td>
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #065f46; font-weight: 700;">Oui : R&amp;D</td>
-                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #991b1b; font-weight: 700;">Non : résultat prévisible</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #10288C; font-weight: 700;">J'ai dû expérimenter pour savoir si ça allait marcher ?</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #065f46; font-weight: 700;">Oui → R&amp;D</td>
+                <td style="padding: 7px 10px; border: 1px solid #dde9fd; color: #991b1b; font-weight: 700;">Non → résultat prévisible</td>
               </tr>
             </table>
             <strong style="color: #10288C;">Formulation qui passe le test RS&amp;DE :</strong><br>
-            <span style="color: #6b7280; font-style: italic; display: block; margin: 4px 0;">A éviter : <em>« J'ai fait un workflow n8n + Claude + Zoho pour automatiser le marketing. »</em></span>
-            <span style="color: #065f46; font-style: italic; display: block; margin: 4px 0 10px 0;">A utiliser : <em>« J'ai développé un système d'automatisation marketing utilisant un agent IA pour analyser, classifier et router les leads selon leur intention et potentiel de conversion. Le système intègre un pipeline RAG sur les données propriétaires de l'entreprise pour générer des réponses contextuelles personnalisées. Plusieurs architectures d'agents ont été testées et comparées afin d'optimiser la précision et le temps de réponse. »</em></span>
-            <strong>Ce qui compte : pas les outils utilisés, mais le problème résolu et la démarche pour le résoudre.</strong>
+            <span style="color: #6b7280; font-style: italic; display: block; margin: 4px 0;">Au lieu de : <em>« J'ai fait un workflow n8n + Claude + Zoho pour automatiser le marketing »</em></span>
+            <span style="color: #065f46; font-style: italic; display: block; margin: 4px 0 10px 0;">Formuler comme : <em>« J'ai développé un système d'automatisation marketing utilisant un agent IA pour analyser, classifier et router les leads selon leur intention et potentiel de conversion. Le système intègre un pipeline RAG sur les données propriétaires pour générer des réponses contextuelles personnalisées. Plusieurs architectures d'agents ont été testées et comparées pour optimiser la précision et le temps de réponse. »</em></span>
+            <strong>Ce qui compte : pas les outils utilisés, mais le problème résolu et comment.</strong>
           </td>
         </tr>
         <tr>
-          <td class="lbl" style="white-space: normal; word-wrap: break-word;">Pour ce projet</td>
+          <td class="lbl">Pour ce projet</td>
           <td class="val">
             Un projet d'<strong>automatisation IA custom</strong> (workflows n8n + RAG + IA générative) pour les processus marketing internes coche les 3 critères : l'adaptation aux données spécifiques de l'entreprise crée l'incertitude, le pipeline sur mesure constitue l'avancement, et la documentation des itérations prouve l'investigation systématique.
           </td>
@@ -818,6 +818,7 @@ body::before {
           <th>Couverture</th>
           <th>Disponibilité</th>
           <th>Applicable ?</th>
+          <th>Coût net estimé*</th>
         </tr>
       </thead>
       <tbody>
@@ -826,27 +827,34 @@ body::before {
           <td>~49% des salaires R&amp;D</td>
           <td style="color: #065f46; font-weight: 700;">Immédiat</td>
           <td><span class="tag-yes">✓ Phase 1</span></td>
+          <td>~1 785 $ (sur 3 500 $)</td>
         </tr>
         <tr>
           <td>PSPE (Québec)</td>
           <td>50% du salaire (max 5k$)</td>
           <td style="color: #065f46; font-weight: 700;">Immédiat</td>
           <td><span class="tag-yes">✓ Phase 1</span></td>
+          <td>~1 750 $ (sur 3 500 $)</td>
         </tr>
         <tr>
           <td>FCCQ</td>
           <td>Jusqu'à 70% (selon prog.)</td>
           <td style="color: #065f46; font-weight: 700;">Immédiat</td>
           <td><span class="tag-yes">✓ Phase 1</span></td>
+          <td>Variable</td>
         </tr>
         <tr>
           <td>Mitacs Accélération</td>
           <td>15 000 $/unité (renouv.)</td>
           <td style="color: #92400e; font-weight: 700;">Automne 2026</td>
           <td><span class="tag-maybe">◷ Phase 2</span></td>
+          <td>7 500 $ / unité</td>
         </tr>
       </tbody>
     </table>
+    <p style="font-size: 8.5pt; color: #8ca0c8; margin-top: 6px; font-style: italic;">
+      * Coût net estimé pour votre compagnie sur la base d'une rémunération de consulting de 3 500 $ pour l'été. Les crédits RS&amp;DE et PSPE ne se cumulent pas nécessairement à 100% — consulter un comptable pour optimisation.
+    </p>
 
     <!-- NOTES -->
     <div class="notes-box">
