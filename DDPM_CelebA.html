@@ -311,8 +311,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8">
-                <h1>Conditional Denoising Diffusion Probabilistic Model</h1>
-                <p><strong>cDDPM for Facial Attribute Translation and Domain Conversion | GEI898</strong></p>
+                <h1>AI Portrait Translation — Conditional Diffusion Model Built from Scratch</h1>
+                <p><strong>Conditional image-to-image translation · PyTorch · CelebA dataset</strong></p>
                 <p style="margin-top: 0.5rem; opacity: 0.9;">University of Sherbrooke</p>
             </div>
         </div>
@@ -329,12 +329,12 @@
         <div class="row mb-4">
             <div class="col-lg-8">
                 <p class="text-justify lead">
-                    This project builds a <strong>conditional denoising diffusion probabilistic model (cDDPM)</strong> for domain-to-domain image translation. The primary task converts male portraits to female and female to male using the CelebA facial attribute dataset. A secondary experiment applies the same architecture to Day2Night landscape conversion.
+                    I built a <strong>conditional diffusion model (cDDPM)</strong> that translates facial attributes — converting male portraits to female and vice versa — without any external pretrained backbone. A secondary experiment applies the same architecture to Day2Night landscape conversion.
                 </p>
 
                 <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Technical Goal</h4>
                 <p class="text-justify">
-                    A standard diffusion model generates images from noise with no external guidance. The conditional variant steers that generation toward a target domain using a reference image as input. The model must learn which visual attributes belong to the target domain, transfer them to the output, and do so without discarding the source content entirely.
+                    The challenge: give the model a reference image and have it transfer only the relevant visual attributes — hair, facial structure, skin tone — without overwriting everything else.
                 </p>
 
                 <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">Translation Tasks</h4>
@@ -374,7 +374,7 @@
                 <h3 style="color: var(--primary); margin-bottom: 1rem;">2.1 U-Net Denoising Backbone</h3>
 
                 <p class="text-justify">
-                    The core model is a <strong>U-Net</strong> adapted for iterative denoising. Forward diffusion corrupts the input image by adding noise progressively over timesteps using a <strong>linear scheduler</strong>. At each timestep, the network receives the noisy image plus the conditioning signal and predicts the noise component added at that step. Repeating this prediction in reverse across all timesteps reconstructs a clean, domain-translated image.
+                    The model works by destroying and rebuilding: it learns to add noise to an image in steps, then reverse that process — but steered by a reference image to land in a different domain. The backbone is a <strong>U-Net</strong> that predicts the noise at each step, guided by the conditioning signal until a clean, domain-translated image emerges.
                 </p>
 
                 <div class="model-overview">
@@ -389,7 +389,7 @@
                 </div>
 
                 <p class="text-justify" style="margin-top: 1rem;">
-                    The encoder compresses the noisy input into a compact feature representation by progressively reducing spatial resolution. Skip connections carry high-resolution detail forward to the decoder, preventing fine structure from disappearing in the bottleneck. The decoder rebuilds spatial resolution while using those skip connections to restore sharp boundaries and textures. Predicting noise rather than the clean image directly makes training more numerically stable, since the target is always a well-behaved Gaussian rather than a complex natural image distribution.
+                    The encoder compresses the image down to a compact representation; skip connections carry fine detail forward so the decoder can reconstruct sharp edges and textures without losing them in the bottleneck. Predicting noise rather than the clean image makes training more stable — the target is always a simple Gaussian, not a complex natural image.
                 </p>
             </div>
 
@@ -411,7 +411,7 @@
                 <h3 style="color: var(--primary); margin-bottom: 1rem;">2.2 Attention Placement Strategy</h3>
 
                 <p class="text-justify">
-                    Attention is not applied uniformly across the network. Each location in the U-Net has a different representational role, and the type of attention placed there was chosen to match that role. The table below summarizes what each attention type contributes at each network location.
+                    Different layers handle different jobs — I matched the attention mechanism to what each layer actually needs to do.
                 </p>
 
                 <!-- <table class="comparison-table" style="margin-top: 1.5rem;">
@@ -454,9 +454,9 @@
                 <div class="model-overview" style="margin-top: 1.5rem;">
                     <h5>Attention Placement</h5>
                     <ul style="margin: 0; padding-left: 1.5rem;">
-                        <li><strong>Feature maps (high resolution):</strong> Linear Self-Attention is used here because full attention would be prohibitively expensive at large spatial sizes. It maintains temporal and spatial consistency across feature channels without quadratic cost.</li>
-                        <li><strong>Skip connections:</strong> Cross-Attention here is critical — it prevents the decoder from blindly accepting encoder features that are not relevant to the requested domain translation. The condition (via cross-attention) actively selects what the decoder receives.</li>
-                        <li><strong>Latent space (bottleneck):</strong> Full Self-Attention is applied only here, where the spatial resolution is at its smallest. The computational cost is manageable, and global coherence at this level propagates through the entire decoder, shaping the output structure at the highest semantic level.</li>
+                        <li><strong>Feature maps (high resolution):</strong> Linear Self-Attention — full attention at this resolution would be computationally prohibitive. Keeps features spatially consistent during denoising without the cost blowup.</li>
+                        <li><strong>Skip connections:</strong> Cross-Attention here is critical — it stops the decoder from blindly reusing encoder features that don't match the target domain. The reference image actively decides what the decoder receives.</li>
+                        <li><strong>Bottleneck:</strong> Full Self-Attention only here, where the spatial resolution is smallest and cost is manageable. Global coherence at this compressed point shapes the entire output before the decoder rebuilds the image.</li>
                     </ul>
                 </div>
 
@@ -480,7 +480,7 @@
                 <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Dataset Strategy: Paired vs Unpaired Training</h4>
 
                 <p class="text-justify">
-                    Paired training presents explicit male-female image correspondences at each update step, giving the model a direct signal for what "correct" translation looks like. Unpaired training provides no explicit correspondence. The model learns the translation from population-level statistics across source and target domains. Paired training produces stronger attribute alignment but requires a dataset of matched pairs, which is harder to curate at scale.
+                    Paired training shows the model exact before/after examples — stronger results, harder to scale. Unpaired training learns the translation pattern statistically from two separate pools of images — more flexible, but weaker attribute transfer.
                 </p>
 
                 <div class="row-image" style="text-align: center;">
@@ -491,7 +491,7 @@
                 <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Injection Method Comparison</h4>
 
                 <p class="text-justify">
-                    The condition image is injected by <strong>input concatenation</strong> — it is appended as extra channels directly at the network input. Two configurations were compared: one with unpaired training and no guidance, and one with paired training and Classifier-Free Guidance.
+                    I feed the reference image to the network by appending it as extra input channels — simple, but limited to early-layer influence only. I tested two configurations: a baseline (unpaired, no guidance) against paired training with CFG.
                 </p>
 
                 <table class="comparison-table">
@@ -522,13 +522,13 @@
                 <h4 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Classifier-Free Guidance (CFG)</h4>
 
                 <p class="text-justify">
-                    Without Classifier-Free Guidance, the condition can over-constrain the denoising process, pulling outputs toward a mode that satisfies the condition but deviates from a natural image distribution. CFG addresses this by randomly dropping the condition during training with a probability of <strong>20%</strong>. The model learns to generate under both conditioned and unconditioned paths.
+                    Without guidance, the model over-commits to the reference image and produces outputs that look unnatural — it follows instructions too literally. CFG fixes this by randomly dropping the condition during training (<strong>20%</strong> probability), teaching the model to generate under both conditioned and unconditioned paths.
                 </p>
 
                 <div class="model-overview" style="border-left: 4px solid var(--primary);">
                     <h5>CFG at Inference</h5>
                     <p style="margin: 0.5rem 0;">
-                        At inference time, predictions from the conditioned and unconditioned passes are interpolated. This interpolation controls how strongly the condition steers the output. A high guidance weight prioritizes attribute transfer. A low weight prioritizes image naturalness. The 20% training dropout keeps both modes well-calibrated.
+                        At inference, I blend the conditioned and unconditioned predictions to control how strongly the reference image steers the output — high weight means stronger attribute transfer, low weight means more natural-looking result. The 20% dropout during training keeps both modes reliable.
                     </p>
                 </div>
             </div>
@@ -591,10 +591,10 @@ Tasks:              <strong>CelebA, Day2Night</strong>
         <div class="row mt-4">
             <div class="col-lg-6">
                 <p class="text-justify">
-                    Generated outputs show successful transfer of gender-linked attributes including hair length, facial structure, and apparent makeup. Source identity is not consistently preserved. The conditioning signal transfers target-domain attributes but provides no explicit anchor for source-specific structure, which allows identity drift.
+                    The model successfully transfers hair length, facial structure, and makeup — but doesn't preserve who the person is. It knows what female faces look like. It doesn't know how to make <em>this specific face</em> female.
                 </p>
                 <p class="text-justify">
-                    Adding a face recognition loss would constrain structural drift directly. Without it, extending training is unlikely to resolve the issue since the model receives no gradient signal penalizing identity change. The condition is injected via input concatenation, which limits its influence to the early layers of the network — a deeper injection strategy would improve attribute transfer quality further.
+                    The fix is a face recognition loss — a signal that directly penalizes the model for changing who the person is. Without it, more training won't help; the model is never told identity matters. Injecting the reference image deeper into the network (beyond just the input) would also keep it influential where it counts.
                 </p>
             </div>
             <div class="col-lg-6">
@@ -617,7 +617,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
             </div>
             <div class="col-lg-6">
                 <p class="text-justify">
-                    Paired training with CFG produces stronger attribute transfer than the unpaired baseline. A condition injected at the input loses influence over deeper layers where high-level semantic attributes are represented. Paired training compensates by giving the model explicit correspondences to learn from, while CFG steers inference more precisely toward the target domain.
+                    Paired training with CFG clearly wins. The reference image only enters at the input, so it stops influencing the deeper layers that handle the visual attributes that matter most — paired data and CFG both compensate for that structural limitation.
                 </p>
             </div>
         </div>
@@ -626,7 +626,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
         <h3 style="color: var(--primary); margin-top: 3rem; margin-bottom: 1rem;">4.3 Day2Night Benchmark: CFG vs No CFG</h3>
 
         <p class="text-justify">
-            The Day2Night experiment was run in two configurations — with and without Classifier-Free Guidance — to evaluate how much CFG improves output quality and training stability on a structurally simpler domain shift.
+            I ran Day2Night conversion with and without guidance to isolate exactly how much CFG contributes — on a simpler task where everything else is held constant.
         </p>
 
         <table class="comparison-table">
@@ -691,12 +691,12 @@ Tasks:              <strong>CelebA, Day2Night</strong>
         <div class="model-overview" style="border-left: 4px solid #f0a500; margin-top: 1.5rem;">
             <h5 style="color: #f0a500;">On the Noisy Validation Curve</h5>
             <p style="margin: 0.5rem 0; font-size: 0.95rem;">
-                Both configurations show a validation loss that fluctuates rather than converging smoothly. This is a learning rate issue: the optimizer is taking steps large enough to overshoot weight configurations that would return good gradients, bouncing past them instead of settling in. Training longer with a lower learning rate would allow the model to take finer steps near good solutions, reducing this instability. The training loss trends downward correctly — the fluctuation is specific to validation, which confirms the model is sensitive to step size rather than genuinely failing to generalize.
+                The validation loss bounces instead of converging — a learning rate issue, not a generalization failure. The optimizer is overshooting good solutions rather than settling into them. Training loss trends down correctly, so the fix is simple: train longer at a lower rate.
             </p>
         </div>
 
         <p class="text-justify" style="margin-top: 1rem;">
-            CFG produces noticeably cleaner domain transfer on Day2Night. Without it, the denoising process is less steered at inference and the condition signal has less consistent influence over the output. The loss curves across both runs confirm that the training dynamics are similar — the quality gap is entirely a product of the guidance mechanism at inference, not a difference in how well each variant learned the noise distribution.
+            CFG produces noticeably cleaner results. Without it, the reference image has weaker influence at inference and the output drifts. Both runs learned equally well — the quality gap is entirely from the guidance mechanism, not from training.
         </p>
 
         <!-- 4.4 Personal Photo Test -->
@@ -734,24 +734,24 @@ Tasks:              <strong>CelebA, Day2Night</strong>
             <h3>Project Summary</h3>
 
             <p class="text-justify">
-                This project demonstrates a functional cDDPM pipeline for image-to-image translation using input concatenation conditioning, Classifier-Free Guidance, and paired training. The model transfers gender-linked facial attributes on CelebA and produces directional domain shifts on Day2Night. The conditioning signal was not fully optimized in this iteration: guidance from the condition image sometimes interferes with the denoising process rather than steering it cleanly.
+                I built and trained a working conditional diffusion pipeline from scratch — paired training with guidance beats unpaired training in every configuration tested. The main open problem: condition injection via concatenation only influences early layers. The fix — cross-attention over the condition at every network depth — is the primary next step.
             </p>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Key Outcomes</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
                 <li>Paired training with CFG outperforms unpaired training without guidance for attribute transfer</li>
                 <li>CFG at 20% dropout enables stable inference guidance without destabilizing training</li>
-                <li>Paired training improves attribute correspondence over unpaired population-level sampling</li>
-                <li>Identity preservation across translation is the primary open problem in this configuration</li>
+                <li>Paired training improves attribute correspondence — the model learns from explicit examples rather than inferring the pattern from two separate image pools</li>
+                <li>The model changes who the person is, not just what they look like — identity preservation is the primary open problem</li>
             </ul>
 
             <h4 style="color: var(--primary); margin-top: 1.5rem; margin-bottom: 1rem;">Future Improvements</h4>
             <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                <li><strong>Spatial Placeholder Conditioning:</strong> Reserve specific spatial areas in the feature maps to anchor semantic attributes, improving condition fidelity without over-constraining the denoising path</li>
-                <li><strong>Identity Loss:</strong> Add a face recognition loss term to penalize structural drift from the source identity during translation</li>
-                <li><strong>Deeper Condition Optimization:</strong> Extend training beyond 54 epochs with the conditioning scheme refined to reduce interference with the denoising trajectory</li>
-                <li><strong>Deeper Condition Injection:</strong> Move beyond input concatenation toward cross-attention over the condition encoding for finer spatial control over attribute transfer across all network depths</li>
-                <li><strong>Classifier Guidance:</strong> Combine CFG with a domain attribute classifier to apply semantic gradients at inference time</li>
+                <li><strong>Anchor conditioning:</strong> Reserve dedicated regions in the feature maps so the reference image consistently controls specific attributes — tighter output without over-directing the generation</li>
+                <li><strong>Identity Loss:</strong> Add a face recognition loss so the model is explicitly penalized when the person's identity changes during translation</li>
+                <li><strong>Longer training at lower rate:</strong> Retrain beyond 54 epochs with a reduced learning rate to resolve the noisy validation curves and reach a stable optimum</li>
+                <li><strong>Deeper condition injection:</strong> Replace input-only concatenation with cross-attention at every layer depth so the reference image keeps influencing the output throughout the entire network</li>
+                <li><strong>Classifier Guidance:</strong> Pair CFG with an attribute classifier to apply targeted semantic steering at inference time</li>
             </ul>
         </div>
 
@@ -762,7 +762,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                     Conditioning Failure Example<br>
                     <small>Output where condition signal was not followed</small>
                 </div>
-                <p class="mt-2 text-muted" style="text-align: center;"><small>Example where the condition failed to redirect the denoising trajectory toward the target domain.</small></p>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Example where the reference image failed to redirect the output toward the target domain.</small></p>
             </div>
             <div class="col-lg-6">
                 <!-- add image: sketch of the spatial placeholder concept for future conditioning work -->
@@ -770,7 +770,7 @@ Tasks:              <strong>CelebA, Day2Night</strong>
                     Spatial Placeholder Concept<br>
                     <small>Proposed future conditioning approach</small>
                 </div>
-                <p class="mt-2 text-muted" style="text-align: center;"><small>Future direction: placeholder-based spatial conditioning that reserves feature map areas for targeted semantic attribute injection.</small></p>
+                <p class="mt-2 text-muted" style="text-align: center;"><small>Future direction: reserving dedicated feature map regions to anchor specific visual attributes during generation.</small></p>
             </div>
         </div>
 
